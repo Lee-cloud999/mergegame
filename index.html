@@ -1,21 +1,172 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5c7c9"><link rel="manifest" href="manifest.webmanifest"><title>나은의 미니 농장</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#f8f1dc;color:#5a3c2c}button{font:inherit}.app{max-width:900px;margin:auto;padding:12px;background:linear-gradient(#dff1cf,#f7ebc9);min-height:100vh}.top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.title{font-size:24px;font-weight:900}.stats{display:flex;gap:8px}.pill{background:#fff8e9;border:2px solid #8b684d;border-radius:18px;padding:8px 12px;font-weight:900}.orders{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.order{background:#fff8e9;border:2px solid #9c7556;border-radius:18px;padding:8px;text-align:center}.char{width:100%;height:100px;object-fit:cover;object-position:top;border-radius:12px}.needs{font-size:24px;min-height:34px}.order button,.actions button{border:0;border-radius:14px;padding:10px 12px;font-weight:900;background:#62a582;color:white}.order button:disabled{background:#d5cbbd}.board{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;background:#b78a61;padding:10px;border-radius:20px}.cell{aspect-ratio:1;border:2px solid #d9b992;border-radius:14px;background:#f4dfbd;display:flex;align-items:center;justify-content:center;position:relative;touch-action:none}.cell.target{outline:4px solid #72a66a}.item{width:78%;height:78%;object-fit:contain;border-radius:16px;cursor:grab;touch-action:none}.ghost{position:fixed;z-index:99;pointer-events:none;width:70px;height:70px;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 5px 4px #0004)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{min-height:46px}.actions .secondary{background:#fff8e9;color:#5a3c2c;border:2px solid #9c7556}.msg{margin-top:10px;background:#fff8e9;border:2px solid #d9b992;border-radius:14px;padding:10px}.tiny{font-size:12px;opacity:.75}@media(max-width:650px){.orders{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:repeat(5,1fr)}.char{height:80px}.title{font-size:20px}}
-</style></head><body><main class="app"><div class="top"><div><div class="title">🌱 나은의 미니 농장</div><div class="tiny">합치고 · 키우고 · 납품해요</div></div><div class="stats"><div class="pill">⚡ <span id="energy">100/100</span></div><div class="pill">🪙 <span id="coins">120</span></div></div></div><section id="orders" class="orders"></section><div class="top"><b>머지 밭</b><span id="count" class="tiny"></span></div><section id="board" class="board"></section><div class="actions"><button id="seed">🌱 씨앗 만들기 · ⚡1</button><button id="daily" class="secondary">🎁 오늘 보상</button><button id="reset" class="secondary">새 게임</button></div><div class="msg"><b>🐩 푸디</b> <span id="msg">같은 아이템을 드래그해서 합쳐보세요!</span><div class="tiny">🌱 → 🌿 → 🌷 → 🍓 → 🍊 → 🍎 → 🍇 → ⭐</div></div></main><script>
-const A='assets/'; const chain=[['sprout','씨앗'],['flower','새싹'],['tulip','꽃'],['strawberry','딸기'],['orange','오렌지'],['apple','사과'],['grape','포도'],['star','황금열매']]; const chars=[['puppy','푸디'],['rabbit','토끼'],['cat','고양이'],['chick','병아리']];
-let state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:[{n:[3,4,5],r:52},{n:[3,3,4],r:68},{n:[4,5,6],r:75},{n:[3,5,6],r:60}]}; let drag=null;
-function load(){try{const s=JSON.parse(localStorage.getItem('naeunMergeV1'));if(s&&Array.isArray(s.cells))state=s}catch(e){} if(state.cells.every(x=>x===null)){[0,1,5,6].forEach(i=>state.cells[i]=0);state.cells[7]=1}}
-function save(){localStorage.setItem('naeunMergeV1',JSON.stringify(state))} const $=s=>document.querySelector(s), board=$('#board'); function say(t){$('#msg').textContent=t}
-function inv(l){return state.cells.filter(x=>x===l).length} function can(o){const m={};o.n.forEach(x=>m[x]=(m[x]||0)+1);return Object.entries(m).every(([k,v])=>inv(+k)>=v)}
-function renderOrders(){const el=$('#orders');el.innerHTML='';state.orders.forEach((o,i)=>{const d=document.createElement('article');d.className='order';d.innerHTML=`<img class="char" src="${A+chars[i][0]}.png" alt="${chars[i][1]}"><b>${chars[i][1]}의 주문</b><div class="needs">${o.n.map(n=>`<img src="${A+chain[n][0]}.png" alt="${chain[n][1]}" style="width:34px;height:34px;object-fit:contain;border-radius:8px">`).join('')}</div><div class="tiny">보상 🪙 ${o.r}</div>`;const b=document.createElement('button');b.textContent=can(o)?'납품하기':'준비 중';b.disabled=!can(o);b.onclick=()=>deliver(i);d.appendChild(b);el.appendChild(d)})}
-function render(){board.innerHTML='';state.cells.forEach((lv,i)=>{const c=document.createElement('button');c.className='cell';c.dataset.i=i;c.setAttribute('aria-label',lv==null?'빈 칸':chain[lv][1]);if(lv!=null){const im=document.createElement('img');im.className='item';im.src=A+chain[lv][0]+'.png';im.alt=chain[lv][1];im.addEventListener('pointerdown',e=>start(e,i));c.appendChild(im)}board.appendChild(c)});$('#energy').textContent=state.energy+'/100';$('#coins').textContent=state.coins;$('#count').textContent=state.cells.filter(x=>x!=null).length+'/30칸';renderOrders();save()}
-function merge(f,t){if(f===t||state.cells[f]==null)return;const a=state.cells[f],b=state.cells[t];if(b==null){state.cells[t]=a;state.cells[f]=null;say(chain[a][1]+'을 옮겼어요.')}else if(a===b&&a<chain.length-1){state.cells[f]=null;state.cells[t]=a+1;say('✨ '+chain[a][1]+' + '+chain[a][1]+' → '+chain[a+1][1]+'!')}else say(a===b?'이미 최고 단계예요!':'같은 아이템끼리 합칠 수 있어요.');render()}
-function target(x,y){const e=document.elementsFromPoint(x,y).find(e=>e.classList?.contains('cell'));return e?+e.dataset.i:null}function clear(){document.querySelectorAll('.target').forEach(e=>e.classList.remove('target'))}
-function start(e,i){e.preventDefault();const g=e.currentTarget.cloneNode();g.className='ghost';document.body.appendChild(g);drag={i,id:e.pointerId,g};g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';e.currentTarget.setPointerCapture?.(e.pointerId);e.currentTarget.addEventListener('pointermove',move);e.currentTarget.addEventListener('pointerup',end,{once:true});e.currentTarget.addEventListener('pointercancel',end,{once:true})}
-function move(e){if(!drag)return;drag.g.style.left=e.clientX+'px';drag.g.style.top=e.clientY+'px';clear();const t=target(e.clientX,e.clientY);if(t!=null&&t!==drag.i)board.querySelector(`[data-i="${t}"]`)?.classList.add('target')}
-function end(e){if(!drag)return;const d=drag,t=target(e.clientX,e.clientY);d.g.remove();drag=null;clear();if(t!=null&&t!==d.i)merge(d.i,t)}
-function newOrder(){const p=[[3,3,4],[3,4,5],[4,4,5],[3,5,6],[4,5,6]];const n=p[Math.floor(Math.random()*p.length)].slice();return{n,r:35+n.reduce((a,b)=>a+(b+1)*4,0)}}
-function deliver(i){const o=state.orders[i];if(!can(o))return;o.n.forEach(l=>{const x=state.cells.findIndex(v=>v===l);if(x>=0)state.cells[x]=null});state.coins+=o.r;say(chars[i][1]+' 주문 완료! 🪙 '+o.r);state.orders[i]=newOrder();render()}
-$('#seed').onclick=()=>{if(state.energy<=0){say('에너지가 없어요!');return}const es=state.cells.map((v,i)=>v==null?i:-1).filter(i=>i>=0);if(!es.length){say('빈 칸이 없어요!');return}state.cells[es[Math.floor(Math.random()*es.length)]]=0;state.energy--;say('🌱 씨앗을 만들었어요!');render()};
-$('#daily').onclick=()=>{const d=new Date().toLocaleDateString('en-CA');if(state.lastDaily===d){say('오늘 보상은 이미 받았어요!');return}state.coins+=20;state.lastDaily=d;say('🎁 오늘의 보상 🪙20!');render()};
-$('#reset').onclick=()=>{if(!confirm('게임을 처음부터 시작할까요?'))return;localStorage.removeItem('naeunMergeV1');state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:[{n:[3,4,5],r:52},{n:[3,3,4],r:68},{n:[4,5,6],r:75},{n:[3,5,6],r:60}]};[0,1,5,6].forEach(i=>state.cells[i]=0);state.cells[7]=1;render()};load();render();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5c7c9">
+<link rel="manifest" href="manifest.webmanifest">
+<title>나은의 미니 농장</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#f8f1dc;color:#5a3c2c}
+button{font:inherit}.app{max-width:900px;margin:auto;padding:12px;background:linear-gradient(#dff1cf,#f7ebc9);min-height:100vh}
+.top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.title{font-size:24px;font-weight:900}.stats{display:flex;gap:8px}
+.pill{background:#fff8e9;border:2px solid #8b684d;border-radius:18px;padding:8px 12px;font-weight:900}
+.orders{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.order{background:#fff8e9;border:2px solid #9c7556;border-radius:18px;padding:8px;text-align:center}
+.char{width:100%;height:100px;object-fit:contain;object-position:center;border-radius:12px}
+.needs{font-size:24px;min-height:34px}
+.order button,.actions button{border:0;border-radius:14px;padding:10px 12px;font-weight:900;background:#62a582;color:white}
+.order button:disabled{background:#d5cbbd}
+.board{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;background:#b78a61;padding:10px;border-radius:20px}
+.cell{aspect-ratio:1;border:2px solid #d9b992;border-radius:14px;background:#f4dfbd;display:flex;align-items:center;justify-content:center;position:relative;touch-action:none}
+.cell.target{outline:4px solid #72a66a}
+.item{width:78%;height:78%;object-fit:contain;cursor:grab;touch-action:none}
+.ghost{position:fixed;z-index:99;pointer-events:none;width:70px;height:70px;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 5px 4px #0004)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{min-height:46px}
+.actions .secondary{background:#fff8e9;color:#5a3c2c;border:2px solid #9c7556}
+.msg{margin-top:10px;background:#fff8e9;border:2px solid #d9b992;border-radius:14px;padding:10px}
+.tiny{font-size:12px;opacity:.75}
+@media(max-width:650px){.orders{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:repeat(5,1fr)}.char{height:80px}.title{font-size:20px}}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="top">
+  <div><div class="title">🌱 나은의 미니 농장</div><div class="tiny">합치고 · 키우고 · 납품해요</div></div>
+  <div class="stats"><div class="pill">⚡ <span id="energy">100/100</span></div><div class="pill">🪙 <span id="coins">120</span></div></div>
+</div>
+<section id="orders" class="orders"></section>
+<div class="top"><b>머지 밭</b><span id="count" class="tiny"></span></div>
+<section id="board" class="board"></section>
+<div class="actions">
+  <button id="seed">🌱 씨앗 만들기 · ⚡1</button>
+  <button id="daily" class="secondary">🎁 오늘 보상</button>
+  <button id="reset" class="secondary">새 게임</button>
+</div>
+<div class="msg"><b>🐩 푸디</b> <span id="msg">같은 아이템을 드래그해서 합쳐보세요!</span>
+<div class="tiny">씨앗 → 새싹 → 어린잎 → 꽃 → 풋열매 → 딸기 → 오렌지 → 포도</div></div>
+</main>
+<script>
+const A='assets/';
+const chain=[
+  ['seed','씨앗'],
+  ['sprout','새싹'],
+  ['seedling','어린잎'],
+  ['flower','꽃'],
+  ['fruit1','풋열매'],
+  ['fruit3','딸기'],
+  ['orange','오렌지'],
+  ['grape','포도']
+];
+const chars=[['poodle','푸디'],['rabbit','토끼'],['cat','고양이'],['chick','병아리']];
+const defaultOrders=()=>[
+  {n:[4,5,6],r:52},
+  {n:[5,5,6],r:68},
+  {n:[5,6,7],r:75},
+  {n:[4,6,7],r:60}
+];
+let state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),assetVersion:2};
+let drag=null;
+
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem('naeunMergeV1'));
+    if(s&&Array.isArray(s.cells)){
+      state={...state,...s};
+      if(state.assetVersion!==2){
+        state.orders=defaultOrders();
+        state.assetVersion=2;
+      }
+    }
+  }catch(e){}
+  if(state.cells.every(x=>x===null)){
+    [0,1,5,6].forEach(i=>state.cells[i]=0);
+    state.cells[7]=1;
+  }
+}
+function save(){localStorage.setItem('naeunMergeV1',JSON.stringify(state))}
+const $=s=>document.querySelector(s),board=$('#board');
+function say(t){$('#msg').textContent=t}
+function inv(l){return state.cells.filter(x=>x===l).length}
+function can(o){const m={};o.n.forEach(x=>m[x]=(m[x]||0)+1);return Object.entries(m).every(([k,v])=>inv(+k)>=v)}
+
+function renderOrders(){
+  const el=$('#orders');el.innerHTML='';
+  state.orders.forEach((o,i)=>{
+    const d=document.createElement('article');d.className='order';
+    d.innerHTML=`<img class="char" src="${A+chars[i][0]}.png" alt="${chars[i][1]}"><b>${chars[i][1]}의 주문</b><div class="needs">${o.n.map(n=>`<img src="${A+chain[n][0]}.png" alt="${chain[n][1]}" style="width:34px;height:34px;object-fit:contain">`).join('')}</div><div class="tiny">보상 🪙 ${o.r}</div>`;
+    const b=document.createElement('button');b.textContent=can(o)?'납품하기':'준비 중';b.disabled=!can(o);b.onclick=()=>deliver(i);d.appendChild(b);el.appendChild(d);
+  })
+}
+function render(){
+  board.innerHTML='';
+  state.cells.forEach((lv,i)=>{
+    const c=document.createElement('button');c.className='cell';c.dataset.i=i;
+    c.setAttribute('aria-label',lv==null?'빈 칸':chain[lv]?.[1]||'아이템');
+    if(lv!=null&&chain[lv]){
+      const im=document.createElement('img');im.className='item';im.src=A+chain[lv][0]+'.png';im.alt=chain[lv][1];
+      im.addEventListener('pointerdown',e=>start(e,i));c.appendChild(im);
+    }
+    board.appendChild(c)
+  });
+  $('#energy').textContent=state.energy+'/100';$('#coins').textContent=state.coins;
+  $('#count').textContent=state.cells.filter(x=>x!=null).length+'/30칸';renderOrders();save()
+}
+function merge(f,t){
+  if(f===t||state.cells[f]==null)return;
+  const a=state.cells[f],b=state.cells[t];
+  if(b==null){state.cells[t]=a;state.cells[f]=null;say(chain[a][1]+'을 옮겼어요.')}
+  else if(a===b&&a<chain.length-1){state.cells[f]=null;state.cells[t]=a+1;say('✨ '+chain[a][1]+' + '+chain[a][1]+' → '+chain[a+1][1]+'!')}
+  else say(a===b?'이미 최고 단계예요!':'같은 아이템끼리 합칠 수 있어요.');
+  render()
+}
+function target(x,y){const e=document.elementsFromPoint(x,y).find(e=>e.classList?.contains('cell'));return e?+e.dataset.i:null}
+function clear(){document.querySelectorAll('.target').forEach(e=>e.classList.remove('target'))}
+function start(e,i){
+  e.preventDefault();const g=e.currentTarget.cloneNode();g.className='ghost';document.body.appendChild(g);
+  drag={i,id:e.pointerId,g};g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';
+  e.currentTarget.setPointerCapture?.(e.pointerId);e.currentTarget.addEventListener('pointermove',move);
+  e.currentTarget.addEventListener('pointerup',end,{once:true});e.currentTarget.addEventListener('pointercancel',end,{once:true})
+}
+function move(e){
+  if(!drag)return;drag.g.style.left=e.clientX+'px';drag.g.style.top=e.clientY+'px';clear();
+  const t=target(e.clientX,e.clientY);if(t!=null&&t!==drag.i)board.querySelector(`[data-i="${t}"]`)?.classList.add('target')
+}
+function end(e){
+  if(!drag)return;const d=drag,t=target(e.clientX,e.clientY);d.g.remove();drag=null;clear();
+  if(t!=null&&t!==d.i)merge(d.i,t)
+}
+function newOrder(){
+  const p=[[4,5,6],[5,5,6],[5,6,7],[4,6,7],[4,5,7]];
+  const n=p[Math.floor(Math.random()*p.length)].slice();
+  return{n,r:35+n.reduce((a,b)=>a+(b+1)*4,0)}
+}
+function deliver(i){
+  const o=state.orders[i];if(!can(o))return;
+  o.n.forEach(l=>{const x=state.cells.findIndex(v=>v===l);if(x>=0)state.cells[x]=null});
+  state.coins+=o.r;say(chars[i][1]+' 주문 완료! 🪙 '+o.r);state.orders[i]=newOrder();render()
+}
+$('#seed').onclick=()=>{
+  if(state.energy<=0){say('에너지가 없어요!');return}
+  const es=state.cells.map((v,i)=>v==null?i:-1).filter(i=>i>=0);
+  if(!es.length){say('빈 칸이 없어요!');return}
+  state.cells[es[Math.floor(Math.random()*es.length)]]=0;state.energy--;say('🌱 씨앗을 만들었어요!');render()
+};
+$('#daily').onclick=()=>{
+  const d=new Date().toLocaleDateString('en-CA');
+  if(state.lastDaily===d){say('오늘 보상은 이미 받았어요!');return}
+  state.coins+=20;state.lastDaily=d;say('🎁 오늘의 보상 🪙20!');render()
+};
+$('#reset').onclick=()=>{
+  if(!confirm('게임을 처음부터 시작할까요?'))return;
+  localStorage.removeItem('naeunMergeV1');
+  state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),assetVersion:2};
+  [0,1,5,6].forEach(i=>state.cells[i]=0);state.cells[7]=1;render()
+};
+load();render();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
