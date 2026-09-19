@@ -40,7 +40,7 @@ button{font:inherit}
 .top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:nowrap}
 .title{font-size:21px;font-weight:900}.stats{display:flex;gap:7px}
 .pill{background:#fff8e9;border:2px solid #8b684d;border-radius:18px;padding:6px 11px;font-weight:900}
-.orders{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:6px 0}
+.orders{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:6px 0}
 .order{background:#fffaf0;border:2px solid #9c7556;border-radius:17px;padding:4px 6px;text-align:center}
 .char{width:100%;height:62px;object-fit:contain;object-position:center}
 .needs{font-size:19px;min-height:26px;line-height:26px}
@@ -80,7 +80,13 @@ button{font:inherit}
 .msg{margin:6px auto 0;max-width:720px;background:#fff8e9;border:2px solid #d9b992;border-radius:14px;padding:5px 8px}
 .tiny{font-size:11px;opacity:.75}
 @media(max-width:650px){
-  .orders{grid-template-columns:repeat(2,1fr)}
+  .orders{grid-template-columns:repeat(3,1fr);gap:4px}
+  .order{padding:3px 2px;border-radius:13px}
+  .order b{font-size:11px;white-space:nowrap}
+  .char{height:58px}
+  .needs img{width:24px!important;height:24px!important}
+  .order button{font-size:11px;padding:3px 5px}
+  .tiny{font-size:10px}
   .board{grid-template-columns:repeat(5,1fr)}
   .char{height:66px}
 }
@@ -132,13 +138,17 @@ const chain=[
   ['grape','포도']
 ];
 const chars=[['poodle','푸디'],['rabbit','토끼'],['cat','고양이'],['chick','병아리']];
-const defaultOrders=()=>[
-  {n:[4,5,6],r:52},
-  {n:[5,5,6],r:68},
-  {n:[5,6,7],r:75},
-  {n:[4,6,7],r:60}
-];
-let state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),assetVersion:2};
+const pickThree=()=>[0,1,2,3].sort(()=>Math.random()-.5).slice(0,3);
+function makeOrder(){
+  const count=Math.random()<0.5?1:2;
+  const pool=[4,5,6,7];
+  const n=[];
+  for(let i=0;i<count;i++) n.push(pool[Math.floor(Math.random()*pool.length)]);
+  const r=18+n.reduce((sum,lv)=>sum+(lv+1)*5,0);
+  return {n,r};
+}
+const defaultOrders=()=>Array.from({length:3},()=>makeOrder());
+let state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),activeChars:pickThree(),assetVersion:3};
 let drag=null;
 
 function load(){
@@ -146,9 +156,10 @@ function load(){
     const s=JSON.parse(localStorage.getItem('naeunMergeV1'));
     if(s&&Array.isArray(s.cells)){
       state={...state,...s};
-      if(state.assetVersion!==2){
+      if(state.assetVersion!==3 || !Array.isArray(state.activeChars) || state.activeChars.length!==3){
         state.orders=defaultOrders();
-        state.assetVersion=2;
+        state.activeChars=pickThree();
+        state.assetVersion=3;
       }
     }
   }catch(e){}
@@ -166,8 +177,9 @@ function can(o){const m={};o.n.forEach(x=>m[x]=(m[x]||0)+1);return Object.entrie
 function renderOrders(){
   const el=$('#orders');el.innerHTML='';
   state.orders.forEach((o,i)=>{
+    const ci=state.activeChars[i], ch=chars[ci];
     const d=document.createElement('article');d.className='order';
-    d.innerHTML=`<img class="char" src="${A+chars[i][0]}.png" alt="${chars[i][1]}"><b>${chars[i][1]}의 주문</b><div class="needs">${o.n.map(n=>`<img src="${A+chain[n][0]}.png" alt="${chain[n][1]}" style="width:34px;height:34px;object-fit:contain">`).join('')}</div><div class="tiny">보상 🪙 ${o.r}</div>`;
+    d.innerHTML=`<img class="char" src="${A+ch[0]}.png" alt="${ch[1]}"><b>${ch[1]}의 주문</b><div class="needs">${o.n.map(n=>`<img src="${A+chain[n][0]}.png" alt="${chain[n][1]}" style="width:34px;height:34px;object-fit:contain">`).join('')}</div><div class="tiny">보상 🪙 ${o.r}</div>`;
     const b=document.createElement('button');b.textContent=can(o)?'납품하기':'준비 중';b.disabled=!can(o);b.onclick=()=>deliver(i);d.appendChild(b);el.appendChild(d);
   })
 }
@@ -209,15 +221,18 @@ function end(e){
   if(!drag)return;const d=drag,t=target(e.clientX,e.clientY);d.g.remove();drag=null;clear();
   if(t!=null&&t!==d.i)merge(d.i,t)
 }
-function newOrder(){
-  const p=[[4,5,6],[5,5,6],[5,6,7],[4,6,7],[4,5,7]];
-  const n=p[Math.floor(Math.random()*p.length)].slice();
-  return{n,r:35+n.reduce((a,b)=>a+(b+1)*4,0)}
-}
+function newOrder(){ return makeOrder(); }
 function deliver(i){
   const o=state.orders[i];if(!can(o))return;
   o.n.forEach(l=>{const x=state.cells.findIndex(v=>v===l);if(x>=0)state.cells[x]=null});
-  state.coins+=o.r;say(chars[i][1]+' 주문 완료! 🪙 '+o.r);state.orders[i]=newOrder();render()
+  const old=state.activeChars[i];
+  state.coins+=o.r;
+  const used=new Set(state.activeChars.filter((_,idx)=>idx!==i));
+  const candidates=[0,1,2,3].filter(x=>x!==old && !used.has(x));
+  state.activeChars[i]=candidates.length?candidates[Math.floor(Math.random()*candidates.length)]:[0,1,2,3].filter(x=>x!==old)[Math.floor(Math.random()*3)];
+  say(chars[old][1]+' 주문 완료! 🪙 '+o.r+' · 새 손님이 왔어요!');
+  state.orders[i]=newOrder();
+  render()
 }
 $('#seed').onclick=()=>{
   if(state.energy<=0){say('에너지가 없어요!');return}
@@ -233,7 +248,7 @@ $('#daily').onclick=()=>{
 $('#reset').onclick=()=>{
   if(!confirm('게임을 처음부터 시작할까요?'))return;
   localStorage.removeItem('naeunMergeV1');
-  state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),assetVersion:2};
+  state={cells:Array(30).fill(null),energy:100,coins:120,lastDaily:'',orders:defaultOrders(),activeChars:pickThree(),assetVersion:3};
   [0,1,5,6].forEach(i=>state.cells[i]=0);state.cells[7]=1;render()
 };
 load();render();
