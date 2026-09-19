@@ -7,32 +7,103 @@
 <link rel="manifest" href="manifest.webmanifest">
 <title>나은의 미니 농장</title>
 <style>
+
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#f8f1dc;color:#5a3c2c}
-button{font:inherit}.app{max-width:900px;margin:auto;padding:12px;background:linear-gradient(#dff1cf,#f7ebc9);min-height:100vh}
-.top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.title{font-size:24px;font-weight:900}.stats{display:flex;gap:8px}
-.pill{background:#fff8e9;border:2px solid #8b684d;border-radius:18px;padding:8px 12px;font-weight:900}
-.orders{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
-.order{background:#fff8e9;border:2px solid #9c7556;border-radius:18px;padding:8px;text-align:center}
-.char{width:100%;height:100px;object-fit:contain;object-position:center;border-radius:12px}
-.needs{font-size:24px;min-height:34px}
-.order button,.actions button{border:0;border-radius:14px;padding:10px 12px;font-weight:900;background:#62a582;color:white}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;color:#5a3c2c}
+body{
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 8% 82%,#fff 0 5px,transparent 6px),
+    radial-gradient(circle at 92% 76%,#fff 0 5px,transparent 6px),
+    linear-gradient(#8ed7f5 0 18%,#d9efb5 18% 58%,#91c86f 58% 100%);
+}
+button{font:inherit}
+.app{
+  width:min(96vw,900px);
+  margin:0 auto;
+  min-height:100dvh;
+  padding:8px 10px 10px;
+  position:relative;
+  background:linear-gradient(180deg,rgba(236,249,213,.94),rgba(220,241,186,.96));
+  border-left:4px solid rgba(255,255,255,.45);
+  border-right:4px solid rgba(255,255,255,.45);
+}
+.app:before,.app:after{
+  content:"🌼  🌿  🌼  🌿";
+  position:fixed;
+  bottom:12px;
+  font-size:30px;
+  opacity:.8;
+  pointer-events:none;
+}
+.app:before{left:12px}.app:after{right:12px;transform:scaleX(-1)}
+.top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:nowrap}
+.title{font-size:21px;font-weight:900}.stats{display:flex;gap:7px}
+.pill{background:#fff8e9;border:2px solid #8b684d;border-radius:18px;padding:6px 11px;font-weight:900}
+.orders{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:6px 0}
+.order{background:#fffaf0;border:2px solid #9c7556;border-radius:17px;padding:4px 6px;text-align:center}
+.char{width:100%;height:62px;object-fit:contain;object-position:center}
+.needs{font-size:19px;min-height:26px;line-height:26px}
+.needs img{width:29px!important;height:29px!important}
+.order button,.actions button{border:0;border-radius:12px;padding:5px 9px;font-weight:900;background:#62a582;color:#fff}
 .order button:disabled{background:#d5cbbd}
-.board{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;background:#b78a61;padding:10px;border-radius:20px}
-.cell{aspect-ratio:1;border:2px solid #d9b992;border-radius:14px;background:#f4dfbd;display:flex;align-items:center;justify-content:center;position:relative;touch-action:none}
+.board{
+  width:min(100%,720px);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:6px;
+  background:#b78a61;
+  padding:8px;
+  border-radius:18px;
+}
+.cell{
+  width:100%;
+  aspect-ratio:1/1;
+  border:2px solid #d9b992;
+  border-radius:13px;
+  background:#f4dfbd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  touch-action:none;
+  min-width:0;
+  padding:0;
+}
 .cell.target{outline:4px solid #72a66a}
-.item{width:78%;height:78%;object-fit:contain;cursor:grab;touch-action:none}
+.item{width:72%;height:72%;object-fit:contain;cursor:grab;touch-action:none}
 .ghost{position:fixed;z-index:99;pointer-events:none;width:70px;height:70px;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 5px 4px #0004)}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{min-height:46px}
+.actions{display:flex;justify-content:center;gap:6px;flex-wrap:nowrap;margin-top:6px}
+.actions button{min-height:32px}
 .actions .secondary{background:#fff8e9;color:#5a3c2c;border:2px solid #9c7556}
-.msg{margin-top:10px;background:#fff8e9;border:2px solid #d9b992;border-radius:14px;padding:10px}
-.tiny{font-size:12px;opacity:.75}
-@media(max-width:650px){.orders{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:repeat(5,1fr)}.char{height:80px}.title{font-size:20px}}
+.msg{margin:6px auto 0;max-width:720px;background:#fff8e9;border:2px solid #d9b992;border-radius:14px;padding:5px 8px}
+.tiny{font-size:11px;opacity:.75}
+@media(max-width:650px){
+  .orders{grid-template-columns:repeat(2,1fr)}
+  .board{grid-template-columns:repeat(5,1fr)}
+  .char{height:66px}
+}
+@media(min-width:651px) and (max-height:1050px){
+  .app{width:min(94vw,850px);padding-top:6px}
+  .title{font-size:19px}
+  .char{height:52px}
+  .order{padding:3px 5px}
+  .order b{font-size:13px}
+  .needs{min-height:22px;line-height:22px}
+  .needs img{width:25px!important;height:25px!important}
+  .order button{padding:3px 8px}
+  .board{width:min(72vh,690px);gap:5px;padding:7px}
+  .actions{margin-top:4px}
+  .actions button{min-height:28px;padding:3px 8px}
+  .msg{margin-top:4px;padding:4px 7px}
+}
+
 </style>
 </head>
 <body>
 <main class="app">
+<div aria-hidden="true" style="position:fixed;left:1.5vw;top:23vh;font-size:64px;opacity:.75;z-index:-1">🌳</div><div aria-hidden="true" style="position:fixed;right:2vw;top:34vh;font-size:68px;opacity:.75;z-index:-1">🏡</div>
 <div class="top">
   <div><div class="title">🌱 나은의 미니 농장</div><div class="tiny">합치고 · 키우고 · 납품해요</div></div>
   <div class="stats"><div class="pill">⚡ <span id="energy">100/100</span></div><div class="pill">🪙 <span id="coins">120</span></div></div>
