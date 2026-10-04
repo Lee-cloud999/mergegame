@@ -3076,8 +3076,13 @@ $('#ttStart').addEventListener('click',()=>{
     const A=avail(),H=hgt(),zmax=Math.min(2.4,(window.innerWidth-24)/base);
     let z=Math.min(zmax,A/H*0.99);
     if(g)z=Math.max(z,0.5);
+    if(!force&&Z>0&&(g||Z>=1.04)){
+      /* periodic tick: never grow; shrink only on real overflow */
+      if(z<Z-0.03)setScale(z);
+      return true;
+    }
     if(g||z>=1.04){
-      if(force||z<Z-0.003||z>Z+0.04||Math.abs(parseFloat(app.style.marginBottom||0)-H*(z-1))>8)setScale(z);
+      setScale(z);
       return true;
     }
     if(Z!==1)setScale(1);
@@ -3088,7 +3093,7 @@ $('#ttStart').addEventListener('click',()=>{
     if(busy)return;busy=true;
     if(pc(force)){busy=false;return}
     const A=avail(),cur=parseFloat(app.style.maxWidth)||460;
-    if(!force&&hgt()<=A+1&&(cur>=460||hgt()>=A-30)){busy=false;return}
+    if(!force&&hgt()<=A+1){busy=false;return}
     let w=460;app.classList.remove('compact','tight');app.style.maxWidth=w+'px';
     const shrink=lo=>{for(let i=0;i<8&&hgt()>A&&w>lo;i++){w=Math.max(lo,Math.floor(w*(A/hgt())*0.995));app.style.maxWidth=w+'px'}};
     shrink(400);
@@ -3097,7 +3102,9 @@ $('#ttStart').addEventListener('click',()=>{
     busy=false;
   }
   window.fitApp=fit;
-  addEventListener('resize',()=>fit(true));
+  let lw=innerWidth,lh=innerHeight;
+  addEventListener('resize',()=>{const dw=Math.abs(innerWidth-lw),dh=Math.abs(innerHeight-lh);
+    if(dw>=2||dh>=80){lw=innerWidth;lh=innerHeight;fit(true)}else fit(false)});
   addEventListener('orientationchange',()=>setTimeout(()=>fit(true),200));
   setInterval(()=>fit(false),1200);
   setTimeout(()=>fit(true),300);
