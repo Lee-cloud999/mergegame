@@ -884,6 +884,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="revOv" hidden><div class="sheet rvbox" role="dialog" aria-modal="true" aria-label="내 후기"><h2>내가 쓴 후기</h2><p class="rvsub" id="revDate"></p><textarea id="revTa" maxlength="1000" placeholder="아직 후기가 없어요. 여기에 적어 주세요"></textarea><div class="rvrow"><button type="button" id="revSave">저장</button><button type="button" id="revCopy" class="sec">복사</button></div><p class="rvsub">후기는 이 기기에만 저장돼요.</p><button class="close" data-close type="button">닫기</button></div></div>
 <div class="overlay" id="profOv" hidden><div class="sheet profsheet" role="dialog" aria-modal="true" aria-label="칭호와 뱃지"><img class="profav" id="profAv" alt=""><div class="proft" id="profT"></div><div class="profs" id="profS"></div><div class="ttlsel" id="ttlsel"></div><div class="bgrid" id="bgrid"></div><button class="close" data-close type="button">닫기</button></div></div>
 <div id="title" hidden><div class="tt-sp"></div><span class="tt-live"><i></i>LIVE</span><div class="tt-fr"><img class="tt-adel" id="ttAdel" alt="" draggable="false"><b class="tt-ch c1">아</b><b class="tt-ch c2">델</b><b class="tt-ch c3">머</b><b class="tt-ch c4">지</b></div><h1 class="tt-h">아델 방송국</h1><p class="tt-sub">아델와이스 팬게임 · 제작 : 내일은쨍쨍</p><button class="tt-btn" id="ttStart" type="button">시작하기</button><div class="tt-kids" id="ttKids"></div><button class="tt-snd" id="ttSnd" type="button"></button><p class="tt-cr">이미지 : AI 제작</p></div>
+<div class="overlay" id="deOv" hidden style="z-index:118"><div class="sheet desheet" role="dialog" aria-modal="true" aria-label="우리가 꾸민 방송국"><div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><button class="close" id="deNext" type="button">다음</button></div></div>
 <div class="overlay" id="epiOv" hidden style="z-index:120"><div class="sheet episheet" role="dialog" aria-modal="true" aria-label="방송 종료 후 채팅"><h2>방송이 끝난 뒤…</h2><div class="sub">시청자 채팅창</div><div class="endchat" id="endChat" aria-live="polite"></div><button class="close" id="epiNext" type="button">다음</button></div></div>
 <div class="overlay" id="sndOv" hidden style="z-index:170"><div class="sheet sndsheet" role="dialog" aria-modal="true" aria-label="소리 설정"><h2>소리 설정</h2><div class="sndrow"><div class="sndhd"><b>배경음악</b><button class="sw" id="swBgm" type="button" role="switch" aria-checked="true" aria-label="배경음악 켜고 끄기"><i></i></button></div><div class="sndsl"><span>🔈</span><input type="range" id="rgBgm" min="0" max="100" step="5" aria-label="배경음악 크기"><b id="vBgm">60</b></div></div><div class="sndrow"><div class="sndhd"><b>효과음</b><button class="sw" id="swSfx" type="button" role="switch" aria-checked="true" aria-label="효과음 켜고 끄기"><i></i></button></div><div class="sndsl"><span>🔈</span><input type="range" id="rgSfx" min="0" max="100" step="5" aria-label="효과음 크기"><b id="vSfx">100</b></div></div><button class="close" data-close type="button">닫기</button></div></div>
 <div class="overlay" id="rst" hidden>
@@ -925,7 +926,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="vnArtOv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="엔딩 일러스트" style="padding:12px">
     <div class="endart" id="endArt" role="img" aria-label="엔딩 일러스트"></div>
-    <div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><div class="endcredit">아델 방송국 · 팬게임<br>제작 : 내일은쨍쨍<br>이미지 : AI 제작</div>
+    <div class="endcredit">아델 방송국 · 팬게임<br>제작 : 내일은쨍쨍<br>이미지 : AI 제작</div>
     <button class="close" data-close type="button">닫기</button>
   </div>
 </div>
@@ -2372,7 +2373,7 @@ function renderVnList(){
     return '<div class="prow vnrow '+(seen?'got':open?'can':'lock')+'"><div class="plv">Lv.'+L+'</div><div class="prw"><b>'+ep.title+'</b></div><div class="pact">'+(open?'<button type="button" data-l="'+L+'">'+(seen?'다시 보기':'보기')+'</button>':'<span class="st">잠김</span>')+'</div></div>';
   }).join('');
 }
-function vnShowArt(){buildEndArt();renderEndScene();$('#vnArtOv').hidden=false}
+function vnShowArt(){buildEndArt();$('#vnArtOv').hidden=false}
 $('#vnArtBtn').addEventListener('click',()=>{$('#vnGal').hidden=true;vnShowArt()});
 $('#vnBtn').addEventListener('click',()=>{renderVnList();$('#vnGal').hidden=false});
 if(location.hash==='#preview')window.vnAll=true;
@@ -2645,7 +2646,15 @@ function showSummary(){
   $('#sumFav').innerHTML='';$('#sumFav').hidden=true;$('#sumTtl').innerHTML='칭호 <b>'+curTitle()+'</b><br><span>'+BADGES.filter(b=>st.badges&&st.badges[b.id]).map(b=>b.ico).join(' ')+'</span>';
   $('#sumOv').hidden=false;
 }
-$('#vnArtOv').addEventListener('click',e=>{if(e.target.id==='vnArtOv'||e.target.closest('[data-close]'))setTimeout(showSummary,250)});
+function showDecorEnd(){
+  renderEndScene();
+  if($('#endScene').hidden){showSummary();return}
+  $('#deOv').hidden=false;
+}
+function deDone(){$('#deOv').hidden=true;setTimeout(showSummary,250)}
+$('#vnArtOv').addEventListener('click',e=>{if(e.target.id==='vnArtOv'||e.target.closest('[data-close]'))setTimeout(showDecorEnd,250)});
+$('#deNext').addEventListener('click',deDone);
+$('#deOv').addEventListener('click',e=>{if(e.target.id==='deOv')deDone()});
 
 const POST_INTRO=['아델 방송국을 엔딩까지 봐주셔서 감사합니다.','이후에도 게임을 계속할 수 있어요.','지금까지 게임을 해 주신 후기를 작성해주세요.'];
 function saveReview(t){t=(t||'').trim();if(!t)return false;st.review={text:t,at:Date.now()};save();return true}
@@ -3473,8 +3482,11 @@ document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#vn
 </script>
 <style>
 /* 엔딩 팝업 안에서 구성 요소가 눌려 찌그러지지 않게 */
-#vnArtOv .sheet>*{flex:none}
-#vnArtOv .endscene{width:min(100%,560px,calc(78vh / 1.5));width:min(100%,560px,calc(78dvh / 1.5))}
+#vnArtOv .sheet>*,#deOv .sheet>*{flex:none}
+#deOv .endscene{width:min(100%,560px,calc(54vh / 1.5));width:min(100%,560px,calc(54dvh / 1.5))}
+.desheet{align-items:center;text-align:center;max-width:640px}
+.desheet .endcap{margin:0;font-size:20px}
+@media (hover:hover) and (pointer:fine) and (min-width:760px){.desheet .endcap{font-size:30px}}
 </style>
 <script>
 /* 채팅은 화면에 보일 때 시작 (일러스트 → 우리가 꾸민 방송국 → 채팅 순서) */
