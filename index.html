@@ -924,7 +924,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="vnArtOv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="엔딩 일러스트" style="padding:12px">
     <div class="endart" id="endArt" role="img" aria-label="엔딩 일러스트"></div>
-    <div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><div class="endcredit">아델 방송국 · 팬게임<br>제작 : 내일은쨍쨍<br>이미지 : AI 제작</div>
+    <div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><div class="endchat" id="endChat" aria-live="polite"></div><div class="endcredit">아델 방송국 · 팬게임<br>제작 : 내일은쨍쨍<br>이미지 : AI 제작</div>
     <button class="close" data-close type="button">닫기</button>
   </div>
 </div>
@@ -2371,7 +2371,7 @@ function renderVnList(){
     return '<div class="prow vnrow '+(seen?'got':open?'can':'lock')+'"><div class="plv">Lv.'+L+'</div><div class="prw"><b>'+ep.title+'</b></div><div class="pact">'+(open?'<button type="button" data-l="'+L+'">'+(seen?'다시 보기':'보기')+'</button>':'<span class="st">잠김</span>')+'</div></div>';
   }).join('');
 }
-function vnShowArt(){buildEndArt();renderEndScene();$('#vnArtOv').hidden=false}
+function vnShowArt(){buildEndArt();endChatArm();renderEndScene();$('#vnArtOv').hidden=false}
 $('#vnArtBtn').addEventListener('click',()=>{$('#vnGal').hidden=true;vnShowArt()});
 $('#vnBtn').addEventListener('click',()=>{renderVnList();$('#vnGal').hidden=false});
 if(location.hash==='#preview')window.vnAll=true;
@@ -3393,9 +3393,9 @@ html body p,html body small,html body .hint,html body .etime,html body .xptxt,ht
 .ea-kid{position:absolute;bottom:4%;width:15.5cqw;height:auto;filter:drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5));animation:eaKid 3.2s ease-in-out infinite}
 @keyframes eaKid{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.1cqw)}}
 .ea-vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,transparent 55%,rgba(5,3,25,.55) 100%)}
-.ea-ttl{position:absolute;left:0;right:0;top:5.5%;text-align:center;font:700 5.6cqw/1.15 'MaruBuri',var(--display);letter-spacing:.04em;background:linear-gradient(#fffbe8,#ffe08a 55%,#ffb86b);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 .3cqw 0 rgba(120,60,20,.55)) drop-shadow(0 0 2cqw rgba(255,220,140,.55));animation:eaTtl 1.6s cubic-bezier(.2,.9,.3,1) both}
+.ea-ttl{position:absolute;left:0;right:0;top:5%;text-align:center;font:700 5.4cqw/1.15 'MaruBuri',var(--display);letter-spacing:.04em;background:linear-gradient(#fffbe8,#ffe08a 55%,#ffb86b);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 .35cqw 0 rgba(120,60,20,.6));animation:eaTtl 1.6s cubic-bezier(.2,.9,.3,1) both}
 @keyframes eaTtl{from{opacity:0;transform:translateY(-3cqw) scale(.94);letter-spacing:.3em}to{opacity:1;transform:none;letter-spacing:.04em}}
-.ea-sub{position:absolute;left:0;right:0;top:19.5%;text-align:center;font:700 2.3cqw/1.2 'MaruBuri',var(--display);color:#fff;text-shadow:0 0 1.2cqw rgba(160,130,255,.9),0 .2cqw .4cqw rgba(0,0,0,.6);letter-spacing:.06em;z-index:3}
+.ea-sub{position:absolute;left:0;right:0;top:23%;text-align:center;font:700 2.3cqw/1.2 'MaruBuri',var(--display);color:#fff;text-shadow:0 0 1.2cqw rgba(160,130,255,.9),0 .2cqw .4cqw rgba(0,0,0,.6);letter-spacing:.06em;z-index:3}
 @media (prefers-reduced-motion:reduce){.endart *{animation:none!important}.ea-meteor{display:none}}
 </style>
 <script>
@@ -3417,6 +3417,70 @@ function buildEndArt(){
   h+='<img class="ea-adel" alt="" draggable="false" src="'+(VN_SPR.C09||VN_SPR.B01)+'">';
   h+='<div class="ea-vig"></div><div class="ea-ttl">오늘도 와줘서 고마워</div><div class="ea-sub">아델 방송국 · 다음 방송에서 만나요</div>';
   el.innerHTML=h;
+}
+</script>
+<style>
+/* 엔딩 에필로그: 시청자 채팅이 올라오고, 마지막에 반전 */
+.endchat{background:#15123a;border:2px solid #3b2f86;border-radius:14px;padding:10px 12px;height:clamp(150px,30vh,260px);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;font-size:14px;line-height:1.4;color:#e9e4ff;position:relative}
+.endchat::before{content:'';position:absolute;left:0;right:0;top:0;height:28px;background:linear-gradient(#15123a,transparent);z-index:2;pointer-events:none}
+.endchat .cm{animation:cmIn .35s ease both;word-break:keep-all}
+.endchat .cm b{margin-right:6px;font-weight:700}
+.endchat .cm.sys{color:#ffd86b;text-align:center;font-weight:700}
+.endchat .cm.adel{background:linear-gradient(#a779f2,#8a5cf0);color:#fff;border-radius:12px;padding:8px 12px;font-weight:700;box-shadow:0 0 14px rgba(167,121,242,.6)}
+.endchat .cm.fin{background:#fff3f8;color:#7a2d52;border:2px solid #ff8fc0;border-radius:12px;padding:10px 12px;font-weight:700;text-align:center}
+@keyframes cmIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (hover:hover) and (pointer:fine) and (min-width:760px){.endchat{font-size:20px;height:clamp(180px,26vh,300px)}}
+</style>
+<script>
+/* 에필로그 채팅: [누가, 내용, 종류] — 종류: 빈칸=시청자, sys=알림, adel=아델, fin=마지막 한 줄 */
+const END_CHAT=[
+ ['','방송 종료 · 시청자 8명이 끝까지 함께했어요','sys'],
+ [0,'오늘도 고생했어요!'],
+ [1,'딸렌지주 공동 연구자 아직 유효한 거죠?'],
+ [2,'삐와이의 왈쯔 앵콜은 언제 해 주나요…'],
+ [3,'냉면 사건은 평생 못 잊습니다 ㅋㅋㅋ'],
+ [4,'냥체 또 보고 싶다냥'],
+ [5,'시참은 안 해도 괜찮아요. 사랑해요'],
+ [6,'지각해도 돼요. 와 주기만 하면 돼요'],
+ [7,'내일도 기다릴게요!'],
+ ['','아델와이스님이 마이크를 끄지 않았습니다','sys'],
+ ['아델','…어? 아직 다들 있었어요? 마이크 켜진 거 알았으면 멋진 말 준비했을 텐데…','adel'],
+ ['아델','오늘 와 줘서 정말 고마웠어요. 내일은 지각 안 해요. …아마도냥.','adel'],
+ ['','다음 방송에서 만나요 💜','fin']
+];
+let endChatT=[];
+function playEndChat(){
+  const box=document.getElementById('endChat');if(!box)return;
+  endChatT.forEach(clearTimeout);endChatT=[];box.innerHTML='';
+  const cols=['#ff9ac2','#ffc36b','#ff7a7a','#7cc4ff','#c3a1ff','#ffe27a','#ffb3e6','#9be3b0'];
+  const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  END_CHAT.forEach((r,i)=>{
+    const add=()=>{
+      const d=document.createElement('div');d.className='cm'+(r[2]?' '+r[2]:'');
+      if(r[2]==='adel'||r[2]==='sys'||r[2]==='fin'){d.textContent=(r[2]==='adel'?r[0]+'  ':'')+r[1]}
+      else{const n=document.createElement('b');n.style.color=cols[r[0]];n.textContent=PET_NAME[r[0]];d.appendChild(n);d.appendChild(document.createTextNode(r[1]))}
+      box.appendChild(d);while(box.scrollHeight>box.clientHeight+2&&box.children.length>1)box.removeChild(box.firstChild);
+    };
+    if(calm)add();else endChatT.push(setTimeout(add,900+i*1500+(r[2]==='adel'?900:0)));
+  });
+}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#vnArtOv [data-close]'))endChatT.forEach(clearTimeout)});
+</script>
+<style>
+/* 엔딩 팝업 안에서 구성 요소가 눌려 찌그러지지 않게 */
+#vnArtOv .sheet>*{flex:none}
+#vnArtOv .endscene{width:min(100%,560px)}
+</style>
+<script>
+/* 채팅은 화면에 보일 때 시작 (일러스트 → 우리가 꾸민 방송국 → 채팅 순서) */
+let endChatIO=null,endChatDone=false;
+function endChatArm(){
+  endChatDone=false;endChatT.forEach(clearTimeout);endChatT=[];
+  const box=document.getElementById('endChat');if(!box)return;box.innerHTML='';
+  if(endChatIO)endChatIO.disconnect();
+  if(!('IntersectionObserver' in window)){playEndChat();return}
+  endChatIO=new IntersectionObserver(es=>{if(!endChatDone&&es.some(e=>e.isIntersecting)){endChatDone=true;playEndChat()}},{threshold:.6});
+  endChatIO.observe(box);
 }
 </script>
 </body></html>
