@@ -1,6 +1,6 @@
-const V='adel-merge-v39';
+const V='adel-merge-v40';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
-const AUDIO=['./audio/bgm1.mp3','./audio/bgm2.mp3','./audio/bgm3.mp3','./audio/bgm4.mp3'];
+const AUDIO=['./audio/ending.mp3','./audio/bgm1.mp3','./audio/bgm2.mp3','./audio/bgm3.mp3','./audio/bgm4.mp3'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(async c=>{await c.addAll(FILES);AUDIO.forEach(u=>c.add(u).catch(()=>{}))}).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 /* 음악 파일: 재생 시 구간 요청(Range)을 캐시에서 잘라 응답 (iOS 대응, 오프라인 재생) */

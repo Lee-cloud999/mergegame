@@ -2328,7 +2328,7 @@ function vnEnd(){
   $('#vn').hidden=true;vn=null;bgmSwitch('main');
   save();renderTop();
   if(first){sfx('done');toast('「'+ttl+'」 완료!')}
-  if(first&&art)setTimeout(vnShowArt,600);
+  if(first&&art)setTimeout(()=>endingSeq(),400);
 }
 function vnAdvance(){
   if(!vn)return;
@@ -2379,7 +2379,7 @@ function renderVnList(){
   }).join('');
 }
 function vnShowArt(){buildEndArt();$('#vnArtOv').hidden=false}
-$('#vnArtBtn').addEventListener('click',()=>{$('#vnGal').hidden=true;vnShowArt()});
+$('#vnArtBtn').addEventListener('click',()=>{$('#vnGal').hidden=true;endingSeq()});
 $('#vnBtn').addEventListener('click',()=>{renderVnList();$('#vnGal').hidden=false});
 if(location.hash==='#preview')window.vnAll=true;
 {let _n=0,_t=0;document.querySelector('#vnGal h2').addEventListener('click',()=>{const n=Date.now();_n=(n-_t<1500)?_n+1:1;_t=n;if(_n>=5){_n=0;window.vnAll=!window.vnAll;renderVnList();toast(window.vnAll?'스토리 미리보기 켜짐':'스토리 미리보기 꺼짐')}})}
@@ -2662,11 +2662,11 @@ const POST_INTRO=['아델 방송국을 엔딩까지 봐주셔서 감사합니다
 function saveReview(t){t=(t||'').trim();if(!t)return false;st.review={text:t,at:Date.now()};save();return true}
 function postEnding(){
   if(st.postDone)return;st.postDone=true;save();
-  openIntroSeq(POST_INTRO,'후기 남기기',()=>{if(saveReview($('#rvTa').value))toast('후기를 저장했어요')});
+  openIntroSeq(POST_INTRO,'후기 남기기',()=>{endingStop();if(saveReview($('#rvTa').value))toast('후기를 저장했어요')});
 }
 function showEpilogue(){$('#epiOv').hidden=false;playEndChat()}
 $('#sumOv').addEventListener('click',e=>{if(e.target.id==='sumOv'||e.target.closest('[data-close]'))setTimeout(showEpilogue,300)});
-function epiDone(){endChatT.forEach(clearTimeout);endChatT=[];$('#epiOv').hidden=true;setTimeout(postEnding,300)}
+function epiDone(){endChatT.forEach(clearTimeout);endChatT=[];$('#epiOv').hidden=true;if(st.postDone)setTimeout(()=>endingStop(),300);setTimeout(postEnding,300)}
 $('#epiNext').addEventListener('click',epiDone);
 $('#epiOv').addEventListener('click',e=>{if(e.target.id==='epiOv')epiDone()});
 function openReview(){
@@ -2692,10 +2692,10 @@ function renderSndUI(){
   });
 }
 function openSnd(){renderSndUI();songShow();$('#sndOv').hidden=false}
-$('#swBgm').addEventListener('click',()=>{sndS.bgm=!sndS.bgm;sndSave();if(sndS.bgm){initAudio();if(gameOn)bgmStart()}else bgmStop();renderSndUI();sfx('tap')});
+$('#swBgm').addEventListener('click',()=>{sndS.bgm=!sndS.bgm;sndSave();endingSync();if(sndS.bgm){initAudio();if(gameOn)bgmStart()}else bgmStop();renderSndUI();sfx('tap')});
 $('#swSfx').addEventListener('click',()=>{sndS.sfx=!sndS.sfx;sndSave();renderSndUI();if(sndS.sfx){initAudio();sfx('tap')}});
 $('#selTrack').addEventListener('change',e=>{sIdx=+e.target.value;sndS.track=sIdx;sndSave();sFail=false;applyTrack();sfx('tap')});
-$('#rgBgm').addEventListener('input',e=>{sndS.bgmV=+e.target.value;$('#vBgm').textContent=sndS.bgmV;if(bgmG)bgmG.gain.value=bgmVol();sndSave()});
+$('#rgBgm').addEventListener('input',e=>{sndS.bgmV=+e.target.value;endingSync();$('#vBgm').textContent=sndS.bgmV;if(bgmG)bgmG.gain.value=bgmVol();sndSave()});
 $('#rgSfx').addEventListener('input',e=>{sndS.sfxV=+e.target.value;$('#vSfx').textContent=sndS.sfxV;sndSave()});
 $('#rgSfx').addEventListener('change',()=>{initAudio();sfx('merge',2,1)});
 /* ---- audio helpers + bgm ---- */
@@ -2776,6 +2776,47 @@ function bgmTick(){
     bgmNext+=T.stp;bgmStep++;
   }
 }
+/* ---- 엔딩 곡: BGM 페이드아웃 → 정적 → 엔딩 화면 → 피아노 첫 음 ---- */
+let endingOn=false,eAud=null,eSrc=null,eG=null,endingTm=[];
+function endVol(){return sndS.bgmV/100}
+function endingPreload(){try{fetch('audio/ending.mp3').catch(()=>{})}catch(e){}}
+function endingSeq(){
+  endingTm.forEach(clearTimeout);endingTm=[];
+  endingOn=true;
+  const T=(f,ms)=>endingTm.push(setTimeout(f,ms));
+  try{if(AC&&bgmG){const t=AC.currentTime;bgmG.gain.cancelScheduledValues(t);bgmG.gain.setValueAtTime(bgmG.gain.value,t);bgmG.gain.linearRampToValueAtTime(0,t+1.5)}}catch(e){}
+  endingPreload();
+  T(()=>{bgmStop()},1600);
+  T(()=>{vnShowArt()},2700);
+  T(()=>{endingSongStart()},3500);
+}
+function endingSongStart(){
+  if(!endingOn||!sndS.bgm)return;
+  initAudio();if(!AC)return;
+  if(!eAud){
+    eAud=new Audio();eAud.preload='auto';eAud.src='audio/ending.mp3';
+    eAud.addEventListener('ended',()=>endingStop(true));
+    try{eSrc=AC.createMediaElementSource(eAud);eG=AC.createGain();eSrc.connect(eG);eG.connect(AC.destination)}catch(e){eAud=null;return}
+  }
+  try{eG.gain.cancelScheduledValues(AC.currentTime);eG.gain.setValueAtTime(endVol(),AC.currentTime)}catch(e){}
+  try{eAud.currentTime=0}catch(e){}
+  const p=eAud.play();if(p&&p.catch)p.catch(()=>{});
+}
+function endingStop(quick){
+  if(!endingOn)return;
+  endingTm.forEach(clearTimeout);endingTm=[];
+  const done=()=>{try{if(eAud)eAud.pause()}catch(e){}endingOn=false;if(gameOn&&sndS.bgm)bgmStart()};
+  if(quick||!eAud||eAud.paused||!eG||!AC){done();return}
+  try{const t=AC.currentTime;eG.gain.cancelScheduledValues(t);eG.gain.setValueAtTime(eG.gain.value,t);eG.gain.linearRampToValueAtTime(0,t+2.5)}catch(e){}
+  endingTm.push(setTimeout(done,2600));
+}
+function endingSync(){
+  if(!endingOn||!eAud)return;
+  if(document.hidden||!sndS.bgm){try{eAud.pause()}catch(e){}}
+  else if(eAud.paused&&eAud.currentTime>0&&!eAud.ended){const p=eAud.play();if(p&&p.catch)p.catch(()=>{})}
+  try{if(eG)eG.gain.value=endVol()}catch(e){}
+}
+document.addEventListener('visibilitychange',endingSync);
 /* ---- 노래 파일 재생 (수노 곡) ---- */
 const SONGS=[['audio/bgm1.mp3','Merge With Me'],['audio/bgm2.mp3','Just One More'],['audio/bgm3.mp3','Stay A Little Longer'],['audio/bgm4.mp3','비야 내려라']];
 let sAud=null,sSrc=null,sIdx=(+sndS.track>=0&&+sndS.track<SONGS.length&&sndS.track!==null&&sndS.track!=='')?+sndS.track:0,sFail=false;
@@ -2795,7 +2836,7 @@ function songStart(){
 function songStop(){if(sAud)try{sAud.pause()}catch(e){}}
 function applyTrack(){if(!gameOn||!sndS.bgm)return;bgmStop();bgmStart()}
 function bgmStart(){
-  if(bgmT||!sndS.bgm)return;initAudio();if(!AC)return;
+  if(bgmT||!sndS.bgm||endingOn)return;initAudio();if(!AC)return;
   if(sAud&&!sAud.paused&&songMode()&&bgmG)return;
   bgmG=mkBus();bgmG.gain.value=bgmVol();
   if(songMode()&&songStart())return;
@@ -3061,7 +3102,7 @@ $('#rMore').addEventListener('click',()=>roulSpin(true));
 $('#rClose').addEventListener('click',()=>{if(!roulBusy)$('#roul').hidden=true});
 $('#ttSnd').addEventListener('click',()=>openSnd());
 $('#ttStart').addEventListener('click',()=>{
-  initAudio();sfx('tap');gameOn=true;bgmStart();
+  initAudio();sfx('tap');gameOn=true;bgmStart();setTimeout(endingPreload,15000);
   const t=$('#title');t.classList.add('out');setTimeout(()=>{t.hidden=true;t.classList.remove('out')},380);
   checkBadges(true);showIntro();finCheck();scheduleTut();roulCheck();
 });
