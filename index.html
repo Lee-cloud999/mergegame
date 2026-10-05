@@ -2845,8 +2845,9 @@ function buildTitles(){
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('#ttlsel .tso');if(!b||b.disabled)return;
+  const _sh=b.closest('.sheet'),_sy=_sh?_sh.scrollTop:0;
   st.title=b.dataset.t==='auto'?null:b.dataset.t;save();sfx('tap');
-  $('#profT').textContent=curTitle();ttlChip();buildTitles();
+  $('#profT').textContent=curTitle();ttlChip();buildTitles();if(_sh)_sh.scrollTop=_sy;
   toast('칭호를 '+curTitle()+'(으)로 바꿨어요');
 });
 const BADGES=[
@@ -3518,5 +3519,27 @@ function endChatArm(){
 <style>
 /* PC / 아이패드 가로: 게임 화면 제작 문구를 읽기 편하게 */
 .app.pcgrid .cr{font-size:13px;line-height:1.4;overflow:visible}
+</style>
+<style>
+/* 칭호·뱃지: PC/아이패드 가로에서는 스크롤 없이 한눈에 (왼쪽 칭호, 오른쪽 뱃지) */
+@media (min-width:900px) and (min-height:560px){
+#profOv .sheet.profsheet{max-width:min(940px,calc((100vw - 48px) / 1.2))!important;max-height:none!important;overflow:visible!important;display:grid;grid-template-columns:330px 1fr;grid-template-areas:"av bg" "t bg" "s bg" "sel bg" "cl cl";column-gap:22px;row-gap:6px;align-items:start;text-align:center;padding:22px 24px 18px}
+#profOv .profav{grid-area:av;justify-self:center;width:84px;height:84px}
+#profOv .proft{grid-area:t;font-size:24px}
+#profOv .profs{grid-area:s;font-size:14px;margin:0}
+#profOv .ttlsel{grid-area:sel}
+#profOv .tsl{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+#profOv .tso{padding:4px 4px}
+#profOv .tso b{font-size:15px}
+#profOv .tso small{font-size:11px;min-height:0}
+#profOv .bgrid{grid-area:bg;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-self:stretch;align-content:start}
+#profOv .bdg{padding:10px 4px}
+#profOv .bdg .bi{font-size:30px}
+#profOv .bdg b{font-size:15px}
+#profOv .bdg small{font-size:12px}
+#profOv .close{grid-area:cl;justify-self:center;margin-top:6px}
+}
+/* 모바일: 칭호는 3열로 줄여 스크롤을 줄임 */
+@media (max-width:899px){#profOv .tsl{grid-template-columns:repeat(3,minmax(0,1fr))}#profOv .tso b{font-size:12px}}
 </style>
 </body></html>
