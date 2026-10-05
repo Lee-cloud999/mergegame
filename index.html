@@ -1306,6 +1306,7 @@ function renderOrders(fresh){
     '</div><div class="rew">'+COIN+'<b>'+(o.spk?o.coins*2:o.coins)+'</b>'+(o.state==='done'?'':'<button class="subbtn'+(findMatches(k).length?' ready':'')+'" type="button" data-k="'+k+'">제출</button>')+'</div></div></div>'
   ).join('');
   scheduleTut();
+  if(typeof qFit==='function')qFit();
 }
 const GENS={0:'B',1:'E',2:'A',3:'C',4:'F',5:'D'};
 function syncGens(){if(!st)return;if(!st.genPos)st.genPos={B:0,E:1,A:2,C:3,F:4,D:5};Object.keys(GENS).forEach(k=>delete GENS[k]);if(!st.genOn){st.genOn={};Object.keys(st.genPos).forEach(c=>{if(genOpen(c))st.genOn[c]=true})}if(!st.tq)st.tq=[];if(!st.gq)st.gq={};Object.keys(st.genPos).forEach(c=>{if(genOpen(c)&&st.genOn[c])GENS[st.genPos[c]]=c});Object.keys(st.genPos).forEach(c=>{if(genOpen(c)&&!st.genOn[c]&&!st.gq[c]){st.gq[c]=1;st.tq.push({g:c})}})}
@@ -1334,8 +1335,8 @@ function renderQ(){const el=$('#qslot');if(!el||!st)return;const q=st.tq||[],e=q
     el.innerHTML='<span class="tmpqt">임시 공간</span><span class="tmpqi">'+ic+'</span><span class="tmpqh">'+(e.g?'새 생성기':'눌러서 놓기')+'</span>'+(q.length>1?'<span class="tmpqn">'+q.length+'</span>':'')+(e.g?'<span class="tmpqnew">NEW</span>':'')}
   if(q.length>_qPrev&&_qPrev>=0&&e){void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}
   _qPrev=q.length;qFit()}
-function qFit(){const el=$('#qslot'),row=el&&el.parentElement,od=document.querySelector('#orders .order'),s=od&&od.querySelector('.sign');if(!el||!s||!row.offsetWidth)return;const g=parseFloat(getComputedStyle(row).columnGap)||0,top=(od.offsetTop+s.offsetTop)+'px',h=s.offsetHeight+'px',w=((row.offsetWidth-3*g)/4).toFixed(1)+'px';if(el.style.top!==top)el.style.top=top;if(el.style.height!==h)el.style.height=h;if(el.style.width!==w)el.style.width=w}
-setInterval(qFit,800);addEventListener('resize',()=>setTimeout(qFit,50));
+function qFit(){const el=$('#qslot'),row=el&&el.parentElement,od=document.querySelector('#orders .order'),s=od&&od.querySelector('.sign');if(!el||!s||!row.offsetWidth)return;const g=parseFloat(getComputedStyle(row).columnGap)||0,top='auto',h=s.offsetHeight+'px',w=((row.offsetWidth-3*g)/4).toFixed(1)+'px';if(el.style.top!==top)el.style.top=top;if(el.style.height!==h)el.style.height=h;if(el.style.width!==w)el.style.width=w}
+setInterval(qFit,800);new MutationObserver(()=>qFit()).observe(document.querySelector('.app')||document.body,{attributes:true,attributeFilter:['class']});addEventListener('resize',()=>setTimeout(qFit,50));
 function qPlace(){
   if(!st||!st.tq||!st.tq.length||(drag&&drag.on))return;
   const e=st.tq[0],em=emptyCells();let j;
@@ -3612,4 +3613,5 @@ document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{co
 <style>.tt-btns{display:flex;gap:12px;align-items:center;justify-content:center}.tt-btns .tt-set{padding:14px 28px}</style>
 <style>.trkrow{display:flex;align-items:center;gap:8px;font-size:14px}.trkrow span{white-space:nowrap}.trkrow select{flex:1;min-width:0;font:inherit;font-size:14px;padding:6px 8px;border-radius:10px;border:2px solid #d8cbf3;background:#fff;color:var(--ink)}@media (hover:hover) and (pointer:fine) and (min-width:760px){.trkrow,.trkrow select{font-size:15px}}</style>
 <style>@media (hover:hover) and (pointer:fine) and (min-width:760px){.setinfo p{font-size:13px!important;line-height:1.35!important}.sndsheet .sndrow{padding:6px 12px}}</style>
+<style>/* 임시 공간: 손님 카드 맨 아래에 고정 (위아래 흔들림 방지) */.app:not(.pcgrid) #qslot{top:auto!important;bottom:0!important}</style>
 </body></html>
