@@ -923,7 +923,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 </div>
 <div class="overlay" id="vnArtOv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="엔딩 일러스트" style="padding:12px">
-    <img id="vnArtImg" alt="엔딩 일러스트" style="display:block;width:100%;height:auto;border-radius:12px">
+    <div class="endart" id="endArt" role="img" aria-label="엔딩 일러스트"></div>
     <div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><div class="endcredit">아델 방송국 · 팬게임<br>제작 : 내일은쨍쨍<br>이미지 : AI 제작</div>
     <button class="close" data-close type="button">닫기</button>
   </div>
@@ -2371,7 +2371,7 @@ function renderVnList(){
     return '<div class="prow vnrow '+(seen?'got':open?'can':'lock')+'"><div class="plv">Lv.'+L+'</div><div class="prw"><b>'+ep.title+'</b></div><div class="pact">'+(open?'<button type="button" data-l="'+L+'">'+(seen?'다시 보기':'보기')+'</button>':'<span class="st">잠김</span>')+'</div></div>';
   }).join('');
 }
-function vnShowArt(){$('#vnArtImg').src=VN_ART;renderEndScene();$('#vnArtOv').hidden=false}
+function vnShowArt(){buildEndArt();renderEndScene();$('#vnArtOv').hidden=false}
 $('#vnArtBtn').addEventListener('click',()=>{$('#vnGal').hidden=true;vnShowArt()});
 $('#vnBtn').addEventListener('click',()=>{renderVnList();$('#vnGal').hidden=false});
 if(location.hash==='#preview')window.vnAll=true;
@@ -3369,4 +3369,54 @@ html body p,html body small,html body .hint,html body .etime,html body .xptxt,ht
 .vn-choices small{font-size:22px}
 }
 </style>
+<style>
+/* 엔딩 일러스트: 별이 빛나는 밤하늘 무대 */
+.endart{position:relative;width:100%;aspect-ratio:16/9;container-type:inline-size;overflow:hidden;border-radius:14px;background:linear-gradient(#070b24 0%,#101a4a 42%,#2a2466 72%,#6a3f86 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18),inset 0 0 60px rgba(5,5,30,.55);isolation:isolate}
+.endart *{pointer-events:none}
+.ea-aur{position:absolute;left:-10%;width:120%;height:46%;filter:blur(18px);opacity:.55;mix-blend-mode:screen;animation:eaAur 14s ease-in-out infinite alternate}
+.ea-aur.a1{top:6%;background:linear-gradient(90deg,transparent,#7cf3d0 25%,#8f7bff 55%,#ff8fd0 80%,transparent);transform:skewY(-6deg)}
+.ea-aur.a2{top:18%;opacity:.35;background:linear-gradient(90deg,transparent,#ff9ad5 30%,#7bb8ff 65%,transparent);transform:skewY(5deg);animation-duration:19s;animation-direction:alternate-reverse}
+@keyframes eaAur{from{transform:translateX(-4%) skewY(-6deg) scaleY(1)}to{transform:translateX(4%) skewY(-3deg) scaleY(1.25)}}
+.ea-moon{position:absolute;left:50%;top:50%;width:46cqw;height:46cqw;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 38% 36%,#fffbe6 0 30%,#ffeeb8 55%,#ffd98a 100%);box-shadow:0 0 6cqw 2cqw rgba(255,236,170,.45),0 0 18cqw 8cqw rgba(255,214,140,.22);opacity:.93;animation:eaMoon 6s ease-in-out infinite alternate}
+.ea-moon::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 70% 62%,rgba(215,170,110,.35) 0 6%,transparent 7%),radial-gradient(circle at 30% 68%,rgba(215,170,110,.28) 0 4.5%,transparent 5.5%),radial-gradient(circle at 58% 28%,rgba(215,170,110,.25) 0 3.5%,transparent 4.5%)}
+@keyframes eaMoon{from{box-shadow:0 0 6cqw 2cqw rgba(255,236,170,.4),0 0 16cqw 7cqw rgba(255,214,140,.2)}to{box-shadow:0 0 8cqw 3cqw rgba(255,240,180,.6),0 0 22cqw 10cqw rgba(255,214,140,.3)}}
+.ea-st{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 .7cqw rgba(255,255,255,.9);animation:eaTw 3s ease-in-out infinite}
+@keyframes eaTw{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.25)}}
+.ea-sp{position:absolute;color:#ffe9a8;text-shadow:0 0 1.2cqw rgba(255,226,140,.9);line-height:1;animation:eaTw 2.6s ease-in-out infinite}
+.ea-meteor{position:absolute;height:.35cqw;width:14cqw;border-radius:99px;background:linear-gradient(90deg,transparent,#fff 80%);opacity:0;transform:rotate(-28deg);animation:eaMet 7s linear infinite}
+@keyframes eaMet{0%{opacity:0;transform:translate(0,0) rotate(-28deg)}4%{opacity:1}14%{opacity:0;transform:translate(-34cqw,18cqw) rotate(-28deg)}100%{opacity:0;transform:translate(-34cqw,18cqw) rotate(-28deg)}}
+.ea-hill{position:absolute;left:0;bottom:0;width:100%;height:30%}
+.ea-fl{position:absolute;bottom:-6%;font-size:3.4cqw;line-height:1;opacity:0;animation:eaRise 9s ease-in infinite;filter:drop-shadow(0 0 .8cqw rgba(255,150,200,.8))}
+@keyframes eaRise{0%{opacity:0;transform:translateY(0) scale(.6)}12%{opacity:.95}85%{opacity:.7}100%{opacity:0;transform:translateY(-62cqw) translateX(3cqw) scale(1.1)}}
+.ea-adel{position:absolute;left:50%;bottom:7%;height:60%;width:auto;transform:translateX(-50%);filter:drop-shadow(0 1cqw 2cqw rgba(0,0,0,.55)) drop-shadow(0 0 3cqw rgba(255,240,200,.55));animation:eaBreath 3.4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes eaBreath{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.035)}}
+.ea-kid{position:absolute;bottom:4%;width:15.5cqw;height:auto;filter:drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5));animation:eaKid 3.2s ease-in-out infinite}
+@keyframes eaKid{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.1cqw)}}
+.ea-vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,transparent 55%,rgba(5,3,25,.55) 100%)}
+.ea-ttl{position:absolute;left:0;right:0;top:5.5%;text-align:center;font:700 5.6cqw/1.15 'MaruBuri',var(--display);letter-spacing:.04em;background:linear-gradient(#fffbe8,#ffe08a 55%,#ffb86b);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 .3cqw 0 rgba(120,60,20,.55)) drop-shadow(0 0 2cqw rgba(255,220,140,.55));animation:eaTtl 1.6s cubic-bezier(.2,.9,.3,1) both}
+@keyframes eaTtl{from{opacity:0;transform:translateY(-3cqw) scale(.94);letter-spacing:.3em}to{opacity:1;transform:none;letter-spacing:.04em}}
+.ea-sub{position:absolute;left:0;right:0;top:19.5%;text-align:center;font:700 2.3cqw/1.2 'MaruBuri',var(--display);color:#fff;text-shadow:0 0 1.2cqw rgba(160,130,255,.9),0 .2cqw .4cqw rgba(0,0,0,.6);letter-spacing:.06em;z-index:3}
+@media (prefers-reduced-motion:reduce){.endart *{animation:none!important}.ea-meteor{display:none}}
+</style>
+<script>
+function buildEndArt(){
+  const el=document.getElementById('endArt');if(!el)return;
+  let h='<div class="ea-aur a1"></div><div class="ea-aur a2"></div>';
+  let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  for(let i=0;i<70;i++){const sz=.25+rnd()*.5;h+='<i class="ea-st" style="left:'+(rnd()*100).toFixed(1)+'%;top:'+(rnd()*70).toFixed(1)+'%;width:'+sz.toFixed(2)+'cqw;height:'+sz.toFixed(2)+'cqw;animation-delay:-'+(rnd()*3).toFixed(2)+'s;animation-duration:'+(2+rnd()*3).toFixed(1)+'s"></i>'}
+  [[8,18,3.4],[90,14,3.8],[16,52,2.6],[84,48,3],[34,10,2.4],[68,8,2.2]].forEach((q,i)=>{h+='<span class="ea-sp" style="left:'+q[0]+'%;top:'+q[1]+'%;font-size:'+q[2]+'cqw;animation-delay:-'+(i*.7)+'s">✦</span>'});
+  h+='<i class="ea-meteor" style="left:78%;top:8%"></i><i class="ea-meteor" style="left:96%;top:30%;animation-delay:-3.5s;animation-duration:9s"></i>';
+  h+='<div class="ea-moon"></div>';
+  h+='<svg class="ea-hill" viewBox="0 0 160 48" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 C30 8 55 16 80 20 C110 25 135 8 160 18 L160 48 L0 48Z" fill="#241a5a"/><path d="M0 32 C28 22 60 30 90 30 C120 30 140 22 160 28 L160 48 L0 48Z" fill="#171244"/></svg>';
+  const em=['💖','✨','💜','⭐','🩷','✨','💗','💫'];
+  for(let i=0;i<12;i++)h+='<span class="ea-fl" style="left:'+(6+rnd()*88).toFixed(0)+'%;animation-delay:-'+(rnd()*9).toFixed(1)+'s;animation-duration:'+(7+rnd()*5).toFixed(1)+'s">'+em[i%em.length]+'</span>';
+  const kids=[[2,4],[13.5,1],[25,5],[36,2],[48.5,2],[59,5],[70.5,1],[82,4]];
+  const order=[0,3,1,5,2,7,4,6];
+  const L=[[1.5,2,0],[13.5,0,1],[6,15,2],[19,11,3]],R=[[83,2,4],[70.5,0,5],[77,15,6],[64,11,7]];
+  L.concat(R).forEach((q,i)=>{h+='<img class="ea-kid" alt="" draggable="false" src="'+PET_IMG[q[2]]+'" style="left:'+q[0]+'%;bottom:'+q[1]+'%;animation-delay:-'+(i*.45).toFixed(2)+'s">'});
+  h+='<img class="ea-adel" alt="" draggable="false" src="'+(VN_SPR.C09||VN_SPR.B01)+'">';
+  h+='<div class="ea-vig"></div><div class="ea-ttl">오늘도 와줘서 고마워</div><div class="ea-sub">아델 방송국 · 다음 방송에서 만나요</div>';
+  el.innerHTML=h;
+}
+</script>
 </body></html>
