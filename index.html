@@ -1676,7 +1676,7 @@ function renderDex(){
   const M=$('#dexMgr');
   if(dexSel==null||!st.unlocked.includes(dexSel)){
     dexSel=null;
-    M.innerHTML='<div class="dm-hint"><b>아기 관리</b><span>손님을 눌러 이름을 짓거나, 방송국에 둘지 정해요.</span><span>지금 방송국에 있는 아기 '+shown+'명</span></div>';
+    M.innerHTML='<div class="dm-hint"><b>아기 관리</b><span>손님을 눌러 이름을 지을 수 있어요.</span><span>방송국에 둘지 정할 수 있어요.</span><span>지금 방송국에 있는 아기 '+shown+'명</span></div>';
     return;
   }
   const p=dexSel,hide=!!(st.petHide&&st.petHide[p]),isSeen=seen.includes(p);
