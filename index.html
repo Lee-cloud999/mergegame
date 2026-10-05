@@ -884,7 +884,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="revOv" hidden><div class="sheet rvbox" role="dialog" aria-modal="true" aria-label="내 후기"><h2>내가 쓴 후기</h2><p class="rvsub" id="revDate"></p><textarea id="revTa" maxlength="1000" placeholder="아직 후기가 없어요. 여기에 적어 주세요"></textarea><div class="rvrow"><button type="button" id="revSave">저장</button><button type="button" id="revCopy" class="sec">복사</button></div><p class="rvsub">후기는 이 기기에만 저장돼요.</p><button class="close" data-close type="button">닫기</button></div></div>
 <div class="overlay" id="profOv" hidden><div class="sheet profsheet" role="dialog" aria-modal="true" aria-label="칭호와 뱃지"><img class="profav" id="profAv" alt=""><div class="proft" id="profT"></div><div class="profs" id="profS"></div><div class="ttlsel" id="ttlsel"></div><div class="bgrid" id="bgrid"></div><button class="close" data-close type="button">닫기</button></div></div>
 <div id="title" hidden><div class="tt-sp"></div><span class="tt-live"><i></i>LIVE</span><div class="tt-fr"><img class="tt-adel" id="ttAdel" alt="" draggable="false"><b class="tt-ch c1">아</b><b class="tt-ch c2">델</b><b class="tt-ch c3">머</b><b class="tt-ch c4">지</b></div><h1 class="tt-h">아델 방송국</h1><p class="tt-sub">아델와이스 팬게임 · 제작 : 내일은쨍쨍<br>이미지 : AI 제작</p><button class="tt-btn" id="ttStart" type="button">시작하기</button><div class="tt-kids" id="ttKids"></div><button class="tt-snd" id="ttSnd" type="button"></button></div>
-<div class="overlay" id="deOv" hidden style="z-index:118"><div class="sheet desheet" role="dialog" aria-modal="true" aria-label="우리가 꾸민 방송국"><div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="de-sub" id="deSub"></div><div class="dewrap"><button class="dearr l" id="dePrev" type="button" aria-label="이전 구역">‹</button><div class="dscene endscene" id="endScene" hidden></div><button class="dearr r" id="deNextZ" type="button" aria-label="다음 구역">›</button></div><div class="de-dots" id="deDots"></div><button class="close" id="deNext" type="button">다음</button></div></div>
+<div class="overlay" id="deOv" hidden style="z-index:118"><div class="sheet desheet" role="dialog" aria-modal="true" aria-label="우리가 꾸민 방송국"><div class="endcap" id="endCap" hidden>우리가 꾸민 방송국</div><div class="dscene endscene" id="endScene" hidden></div><button class="close" id="deNext" type="button">다음</button></div></div>
 <div class="overlay" id="epiOv" hidden style="z-index:120"><div class="sheet episheet" role="dialog" aria-modal="true" aria-label="방송 종료 후 채팅"><h2>방송이 끝난 뒤…</h2><div class="sub">시청자 채팅창</div><div class="endchat" id="endChat" aria-live="polite"></div><button class="close" id="epiNext" type="button">다음</button></div></div>
 <div class="overlay" id="sndOv" hidden style="z-index:170"><div class="sheet sndsheet" role="dialog" aria-modal="true" aria-label="소리 설정"><h2>소리 설정</h2><div class="sndrow"><div class="sndhd"><b>배경음악</b><button class="sw" id="swBgm" type="button" role="switch" aria-checked="true" aria-label="배경음악 켜고 끄기"><i></i></button></div><div class="sndsl"><span>🔈</span><input type="range" id="rgBgm" min="0" max="100" step="5" aria-label="배경음악 크기"><b id="vBgm">60</b></div></div><div class="sndrow"><div class="sndhd"><b>효과음</b><button class="sw" id="swSfx" type="button" role="switch" aria-checked="true" aria-label="효과음 켜고 끄기"><i></i></button></div><div class="sndsl"><span>🔈</span><input type="range" id="rgSfx" min="0" max="100" step="5" aria-label="효과음 크기"><b id="vSfx">100</b></div></div><button class="close" data-close type="button">닫기</button></div></div>
 <div class="overlay" id="rst" hidden>
@@ -2647,7 +2647,7 @@ function showSummary(){
   $('#sumOv').hidden=false;
 }
 function showDecorEnd(){
-  deIdx=0;renderEndScene();
+  renderEndScene();
   if($('#endScene').hidden){showSummary();return}
   $('#deOv').hidden=false;
 }
@@ -2936,34 +2936,17 @@ function openProf(){
 document.querySelector('.brand .av').addEventListener('click',()=>{sfx('tap');openProf()});
 
 /* ---- ending: the decorated studio ---- */
-let deIdx=0;
-const DE_VIEWS=['전체','입구','스튜디오','시청자석'];
-function endSceneHTML(zf){
-  const on=id=>owned(id)&&(zf==null||SPOTS.find(x=>x.id===id).zone===zf);
+function endSceneHTML(){
   let v=sceneBase();
-  DRAW_ORDER.forEach(id=>{if(id==='sign'||!on(id))return;v+='<g>'+spotSVG(id,st.dec[id])+'</g>'});
+  DRAW_ORDER.forEach(id=>{if(id==='sign'||!owned(id))return;v+='<g>'+spotSVG(id,st.dec[id])+'</g>'});
   seenPets().filter(p=>!(st.petHide&&st.petHide[p])).slice(-PSLOT.length).forEach((p,k)=>{const q=PSLOT[k],cx=q[0],by=q[1],sz=q[2];v+='<g><ellipse cx="'+cx+'" cy="'+(by-3)+'" rx="'+(sz*.34)+'" ry="5" fill="rgba(60,30,10,.22)"/><image href="'+PET_IMG[p]+'" x="'+(cx-sz/2)+'" y="'+(by-sz)+'" width="'+sz+'" height="'+sz+'"/></g>'});
-  return '<svg viewBox="0 0 360 540" aria-hidden="true">'+v+'</svg>'+(on('sign')?signHTML(st.dec.sign,'scene-sgn','pointer-events:none;',false,''):'');
+  return '<svg viewBox="0 0 360 540" aria-hidden="true">'+v+'</svg>'+(owned('sign')?signHTML(st.dec.sign,'scene-sgn','pointer-events:none;',false,''):'');
 }
 function renderEndScene(){
   const has=Object.keys(st.dec||{}).length>0;
   $('#endCap').hidden=!has;$('#endScene').hidden=!has;
-  if(!has)return;
-  const zf=deIdx===0?null:deIdx-1;
-  $('#endScene').innerHTML=endSceneHTML(zf);
-  $('#endCap').textContent=deIdx===0?'우리가 꾸민 방송국':'우리가 꾸민 방송국 · '+DE_VIEWS[deIdx];
-  let sub='';
-  if(zf==null){const n=SPOTS.filter(x=>owned(x.id)).length;sub='방송국 꾸미기 '+n+'/'+SPOTS.length}
-  else{const sp=SPOTS.filter(x=>x.zone===zf),n=sp.filter(x=>owned(x.id)).length;sub=DZ[zf].n+' 구역 '+n+'/'+sp.length+(n?'':' · 아직 꾸미지 않았어요')}
-  $('#deSub').textContent=sub;
-  $('#deDots').innerHTML=DE_VIEWS.map((n,k)=>'<i class="'+(k===deIdx?'on':'')+'" data-i="'+k+'" title="'+n+'"></i>').join('');
+  if(has)$('#endScene').innerHTML=endSceneHTML();
 }
-function deGo(d){deIdx=(deIdx+d+DE_VIEWS.length)%DE_VIEWS.length;sfx('tap');renderEndScene()}
-$('#dePrev').addEventListener('click',()=>deGo(-1));
-$('#deNextZ').addEventListener('click',()=>deGo(1));
-$('#deDots').addEventListener('click',e=>{const i=e.target.closest('i[data-i]');if(i){deIdx=+i.dataset.i;sfx('tap');renderEndScene()}});
-document.addEventListener('keydown',e=>{if($('#deOv').hidden)return;if(e.key==='ArrowLeft')deGo(-1);else if(e.key==='ArrowRight')deGo(1)});
-{let sx=null;const w=$('#deOv');w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});w.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>50)deGo(dx<0?1:-1)},{passive:true})}
 
 /* ---- title screen ---- */
 function ttSndTxt(){const b=$('#ttSnd');if(b)b.textContent=(snd?'🔊':'🔇')+' 소리 설정'}
@@ -3577,18 +3560,5 @@ function endChatArm(){
 .dm-tog{align-self:stretch;background:#ffb04a}
 .dm-tog.off{background:#9a8fa4}
 @media (hover:hover) and (pointer:fine) and (min-width:760px){.dm-hint{font-size:18px}.dm-hint b{font-size:22px}.dm-row img{width:80px;height:80px}.dexmgr .pmEdit input{font-size:20px}.dexmgr .pmEdit button,.dm-tog{font-size:18px;padding:10px 18px}.dm-main small,.dm-note{font-size:16px}.dcell .dout{font-size:13px;padding:3px 8px}}
-</style>
-<style>
-/* 우리가 꾸민 방송국: 구역 넘기기 */
-.dewrap{position:relative;width:min(100%,560px,calc(46vh / 1.5));width:min(100%,560px,calc(46dvh / 1.5));display:flex;justify-content:center}
-.dewrap .endscene{width:100%!important}
-.dearr{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:rgba(111,78,200,.88);color:#fff;font:700 30px/1 var(--display);padding:0 0 4px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.35)}
-.dearr.l{left:-23px}.dearr.r{right:-23px}
-.dearr:active{transform:translateY(-50%) scale(.92)}
-.de-sub{font-size:14px;color:var(--ink2);margin-top:-2px}
-.de-dots{display:flex;gap:8px;justify-content:center}
-.de-dots i{width:10px;height:10px;border-radius:50%;background:#dccbf0;cursor:pointer}
-.de-dots i.on{background:#8a5cf0;transform:scale(1.25)}
-@media (hover:hover) and (pointer:fine) and (min-width:760px){.dearr{width:60px;height:60px;font-size:40px}.dearr.l{left:-80px}.dearr.r{right:-80px}.de-sub{font-size:20px}.de-dots i{width:14px;height:14px}}
 </style>
 </body></html>
