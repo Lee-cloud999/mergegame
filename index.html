@@ -3528,6 +3528,7 @@ const END_CHAT=[
  [6,'냥체 또 보고 싶다냥ㅋ'],
  [4,'시참 없어도 방송 재밌어요. 사랑해요'],
  [3,'어라.. 오늘 처음 왔는데 갑분갬동엔딩? 저도 내일 또 올게요!!'],
+ [5,'너무 무리하지 말고. 또 봐요.'],
  ['','아델와이스님이 마이크를 끄지 않았습니다','sys'],
  ['아델','…어? 아직 다들 있었어요? 마이크 켜진 거 알았으면 멋진 말 준비했을 텐데…','adel'],
  ['아델','오늘 와 줘서 정말 고마웠어요. 내일은 지각 안 해요. …아마도냥.','adel'],
@@ -3548,7 +3549,7 @@ function playEndChat(){
       box.appendChild(d);while(box.scrollHeight>box.clientHeight+2&&box.children.length>1)box.removeChild(box.firstChild);
     };
     const last=i===END_CHAT.length-1;
-    if(calm){add();if(last&&nb)nb.disabled=false}else endChatT.push(setTimeout(()=>{add();if(last&&nb)setTimeout(()=>{nb.disabled=false},500)},900+i*1500+(i>=9?700:0)+(i>=10?1000:0)+(i>=11?1000:0)));
+    if(calm){add();if(last&&nb)nb.disabled=false}else endChatT.push(setTimeout(()=>{add();if(last&&nb)setTimeout(()=>{nb.disabled=false},500)},900+i*1500+(i>=10?700:0)+(i>=11?1000:0)+(i>=12?1000:0)));
   });
 }
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#vnArtOv [data-close]'))endChatT.forEach(clearTimeout)});
