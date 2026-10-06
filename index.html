@@ -1316,8 +1316,8 @@ function orderSay(k){
   const e=document.createElement('div');e.className='say osay';e.textContent=_ls[Math.floor(Math.random()*_ls.length)];
   e.style.left=Math.min(Math.max(r.left+r.width/2,70),innerWidth-70)+'px';e.style.top=(r.top+2)+'px';
   document.body.appendChild(e);
-  if(!reduce)e.animate([{opacity:0,transform:'translate(-50%,-90%) scale(.8)'},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.15},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.85},{opacity:0,transform:'translate(-50%,-110%) scale(1)'}],{duration:2200,easing:'ease-out'});
-  setTimeout(()=>e.remove(),2200);
+  if(!reduce)e.animate([{opacity:0,transform:'translate(-50%,-90%) scale(.8)'},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.12},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.73},{opacity:0,transform:'translate(-50%,-100%) scale(.9)'}],{duration:960,easing:'ease-out'});
+  setTimeout(()=>e.remove(),960);
 }
 function renderOrders(fresh){
   $('#orders').innerHTML=st.orders.map((o,k)=>
