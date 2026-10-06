@@ -1992,14 +1992,14 @@ function signHTML(k,cls,style,anim,attrs){
   return '<div class="sgn '+cls+(anim?' signin':'')+'"'+(attrs||'')+' style="aspect-ratio:'+d.ar.toFixed(4)+';'+style+'"><img src="'+SIGN_IMG[kk]+'" alt="" draggable="false"'+(d.gl?' style="filter:'+d.gl+'"':'')+'><span class="signtxt" style="left:'+(d.cx*100)+'%;top:'+(d.cy*100)+'%;--fs:'+d.fs+';color:'+d.f+';-webkit-text-stroke:calc('+d.sw+'*1cqw) '+(d.k||'transparent')+(d.sh?';text-shadow:'+d.sh:'')+'">'+SIGN_TEXT+'</span></div>';
 }
 const SPOTS=[
-  {id:'sign',zone:0,n:'간판',cost:90,styles:SIGNS.map(x=>x.n),box:[112,0,136,110],anc:[180,56]},
-  {id:'curtain',zone:0,n:'무대 커튼',cost:140,styles:[],box:[88,84,184,154],anc:[180,190]},
-  {id:'plant',zone:0,n:'화분',cost:180,styles:[],box:[-6,190,108,140],anc:[44,250]},
-  {id:'counter',zone:1,n:'방송 데스크',cost:300,gen:'A',styles:[],box:[194,176,168,166],anc:[290,288]},
-  {id:'lamp',zone:1,n:'ON AIR 사인',cost:390,styles:[],box:[16,0,88,92],anc:[60,60]},
-  {id:'machine',zone:1,n:'마이크',cost:500,gen:'B',styles:[],box:[94,208,108,122],anc:[148,250]},
-  {id:'rug',zone:2,n:'러그',cost:630,styles:[],box:[66,386,228,146],anc:[180,452]},
-  {id:'frame',zone:2,n:'벽 포스터',cost:750,styles:[],box:[6,84,84,130],anc:[48,150]}
+  {id:'sign',zone:0,n:'간판',cost:110,styles:SIGNS.map(x=>x.n),box:[112,0,136,110],anc:[180,56]},
+  {id:'curtain',zone:0,n:'무대 커튼',cost:170,styles:[],box:[88,84,184,154],anc:[180,190]},
+  {id:'plant',zone:0,n:'화분',cost:220,styles:[],box:[-6,190,108,140],anc:[44,250]},
+  {id:'counter',zone:1,n:'방송 데스크',cost:360,gen:'A',styles:[],box:[194,176,168,166],anc:[290,288]},
+  {id:'lamp',zone:1,n:'ON AIR 사인',cost:470,styles:[],box:[16,0,88,92],anc:[60,60]},
+  {id:'machine',zone:1,n:'마이크',cost:600,gen:'B',styles:[],box:[94,208,108,122],anc:[148,250]},
+  {id:'rug',zone:2,n:'러그',cost:760,styles:[],box:[66,386,228,146],anc:[180,452]},
+  {id:'frame',zone:2,n:'벽 포스터',cost:900,styles:[],box:[6,84,84,130],anc:[48,150]}
 ];
 const DRAW_ORDER=['lamp','sign','frame','curtain','plant','rug','counter','machine'];
 const PSLOT=[[70,400,66],[198,426,66],[276,374,64],[304,470,66],[118,494,68],[226,520,68],[42,532,66],[150,452,60]];
@@ -2014,7 +2014,7 @@ SPOTS.find(x=>x.id==='frame').styles=POSTERS.map(x=>x.n);
 SPOTS.find(x=>x.id==='plant').styles=POTS.map(x=>x.n);
 let dSel=null,dPick=0,dJust=null,dView=null;
 const owned=id=>st.dec[id]!=null;
-const FREE_STY=1; const stylePrice=k=>k<FREE_STY?0:k<2?80:k<4?150:220;
+const FREE_STY=1; const stylePrice=k=>k<FREE_STY?0:k<2?100:k<4?180:270;
 const styleOwned=(id,k)=>k<FREE_STY||(st.own&&st.own[id]&&st.own[id].includes(k))||st.dec[id]===k;
 const shown=id=>(dSel===id&&dPick!=null)?dPick:st.dec[id];
 const spotView=sp=>!owned(sp.id)&&dView!=null&&sp.zone===dView&&sp.zone>curZone();
