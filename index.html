@@ -1316,6 +1316,7 @@ function orderSay(k){
   const e=document.createElement('div');e.className='say osay';e.textContent=_ls[Math.floor(Math.random()*_ls.length)];
   e.style.left=Math.min(Math.max(r.left+r.width/2,70),innerWidth-70)+'px';e.style.top=(r.top+2)+'px';
   document.body.appendChild(e);
+  {const hw=e.offsetWidth/2+6;e.style.left=Math.min(Math.max(r.left+r.width/2,hw),innerWidth-hw)+'px'}
   if(!reduce)e.animate([{opacity:0,transform:'translate(-50%,-90%) scale(.8)'},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.12},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.73},{opacity:0,transform:'translate(-50%,-100%) scale(.9)'}],{duration:960,easing:'ease-out'});
   setTimeout(()=>e.remove(),960);
 }
@@ -3750,4 +3751,4 @@ setInterval(()=>{
 </script>
 <style>#quest .qhead h2{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:default}</style><style>.pnm{display:none}
 .app.pcgrid .order .sign{position:relative}
-.app.pcgrid .order .pnm{display:block;position:absolute;left:8px;top:-8px;z-index:3;padding:1px 8px;border-radius:9px;background:#fff;border:2px solid #cdb8f3;color:#6B4FA0;font-family:var(--display);font-size:11px;line-height:1.3;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}</style></body></html>
+.app.pcgrid .order .pnm{display:block;position:absolute;left:8px;top:-8px;z-index:3;padding:1px 8px;border-radius:9px;background:#fff;border:2px solid #cdb8f3;color:#6B4FA0;font-family:var(--display);font-size:11px;line-height:1.3;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}</style><style>.say.osay{font-size:17px;padding:6px 14px;max-width:80vw;word-break:keep-all}</style></body></html>
