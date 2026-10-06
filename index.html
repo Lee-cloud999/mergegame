@@ -1708,7 +1708,7 @@ $('#passBtn').addEventListener('click',()=>{renderPass();$('#pass').hidden=false
 $('#dexBtn').addEventListener('click',()=>{dexSel=null;renderDex();$('#dex').hidden=false});
 $('#passList').addEventListener('click',e=>{const b=e.target.closest('button[data-l]');if(b)claimMany([+b.dataset.l])});
 $('#claimAll').addEventListener('click',()=>claimMany(claimable()));
-document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov||e.target.closest('[data-close]')){ov.hidden=true;scheduleTut()}}));
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(ov.id==='nameOv')return;if(e.target===ov||e.target.closest('[data-close]')){ov.hidden=true;scheduleTut()}}));
 
 
 /* daily quests: a 7-day cycle, then a new cycle with new quests */
@@ -3715,7 +3715,6 @@ function nmDone(save_){
 $('#nmOk').addEventListener('click',()=>nmDone(true));
 $('#nmSkip').addEventListener('click',()=>nmDone(false));
 $('#nmInp').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();nmDone(true)}});
-$('#nameOv').addEventListener('click',e=>{if(e.target.id==='nameOv')nmDone(false)});
 setInterval(()=>{
   if(typeof st==='undefined'||!st||!st.petNameQ||!st.petNameQ.length||!gameOn||vn||endingOn||anyOverlay())return;
   nmAsk(st.petNameQ[0]);
