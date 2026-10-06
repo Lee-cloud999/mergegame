@@ -683,7 +683,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 .spkh h3{margin:0;font-family:var(--display);font-weight:400;font-size:16px;color:var(--ink2)}
 .spkh b{font-family:var(--display);font-weight:400;font-size:14px;color:#e8940c}
 .spkp{margin:0 0 8px;font-size:12px;line-height:1.4;color:var(--ink2)}
-.spkg6{display:grid;grid-template-columns:minmax(0,1.1fr) repeat(3,minmax(0,1fr));gap:4px;align-items:stretch}
+.spkg6{display:grid;grid-template-columns:minmax(0,.9fr) repeat(5,minmax(0,1fr));gap:3px;align-items:stretch}.spkg6 .step{font-size:9px}.spkg6 .step span:last-child{font-size:9px;line-height:1.15;word-break:keep-all}
 .spkg6 .spkl{display:flex;align-items:center;font-family:var(--display);font-size:12px;color:var(--ink2);min-width:0}
 .spkg6 .step{padding:6px 2px}
 .spkic{position:relative;display:block;width:100%;max-width:40px;filter:drop-shadow(0 0 3px #fff3a8) drop-shadow(0 0 6px rgba(255,190,60,.9))}
@@ -1303,7 +1303,7 @@ function renderOrders(fresh){
     '<img class="pet" src="'+PET_IMG[o.pet]+'" alt="'+petName(o.pet)+'" draggable="false">'+
     '<div class="sign">'+(o.tier==='hard'?STAR:'')+'<div class="otxt">'+orderLabel(o)+'</div><div class="plate">'+
     o.needs.map(n=>'<span class="need'+(n.done?' done':'')+'" data-c="'+n.c+'" data-l="'+n.l+'" title="'+CHAINS[n.c].names[n.l]+'">'+ICON[n.c][n.l]+(n.done?CHECK:'')+'</span>').join('')+
-    '</div><div class="rew">'+COIN+'<b>'+(o.spk?o.coins*2:o.coins)+'</b>'+(o.state==='done'?'':'<button class="subbtn'+(findMatches(k).length?' ready':'')+'" type="button" data-k="'+k+'">제출</button>')+'</div></div></div>'
+    '</div><div class="rew">'+COIN+'<b>'+(o.spk?o.coins*2+(o.spkb||0):o.coins)+'</b>'+(o.state==='done'?'':'<button class="subbtn'+(findMatches(k).length?' ready':'')+'" type="button" data-k="'+k+'">제출</button>')+'</div></div></div>'
   ).join('');
   scheduleTut();
   if(typeof qFit==='function')qFit();
@@ -1466,7 +1466,7 @@ function act(i,j){
   if(canMerge(i,j)){
     const wasFx=!!b.fx,nl=a.l+1,now=Date.now();
     combo=(now-lastMergeAt<2200)?combo+1:1;lastMergeAt=now;
-    st.cells[i]=null;st.cells[j]={c:a.c,l:nl};if(nl>=4&&nl<=MAXLV&&a.c!=='U'&&st.tutStep>=3&&Math.random()<(st.lv>=12?.08:.05))st.cells[j].sp=1;st.tut=false;track('merge');st.nMerge=(st.nMerge||0)+1;if(nl>=3)track('merge3');
+    st.cells[i]=null;st.cells[j]={c:a.c,l:nl};if(nl>=2&&nl<=MAXLV&&a.c!=='U'&&st.tutStep>=3){st.spkPity=(st.spkPity||0)+1;if(st.spkPity>=SPK_PITY||Math.random()<(nl>=4?(st.lv>=12?.08:.05):.03)){st.cells[j].sp=1;st.spkPity=0}}st.tut=false;track('merge');st.nMerge=(st.nMerge||0)+1;if(nl>=3)track('merge3');
     let bonus=0;if(combo>=3){bonus=combo-1;st.coins+=bonus}
     gainXp(1);
     let bj=null;
@@ -1501,10 +1501,10 @@ function deliver(i,k){
     toast(petName(o.pet)+'은(는) 이 방송은 원하지 않아요');sfx('err');
     return false;
   }
-  o.needs[idx].done=true;st.cells[i]=null;if(it.l>=4)track('hi');if(it.sp){o.spk=1;setTimeout(()=>spkOrder(k),150)}
+  o.needs[idx].done=true;st.cells[i]=null;if(it.l>=4)track('hi');if(it.sp){o.spk=1;o.spkb=(o.spkb||0)+(SPKB[it.l]||0);setTimeout(()=>spkOrder(k),150)}
   renderBoard();
   if(o.needs.every(n=>n.done)){
-    o.state='done';track('deliver');st.nDeliv=(st.nDeliv||0)+1;const _cn=o.coins*(o.spk?2:1);track('coin',_cn);st.coins+=_cn;st.fed[o.pet]=(st.fed[o.pet]||0)+1;gainXp(o.xp);
+    o.state='done';track('deliver');st.nDeliv=(st.nDeliv||0)+1;const _cn=o.coins*(o.spk?2:1)+(o.spkb||0);track('coin',_cn);st.coins+=_cn;st.fed[o.pet]=(st.fed[o.pet]||0)+1;gainXp(o.xp);
     refresh();
     floatText(k,'+'+_cn+(o.spk?' ✨':''));
     toast(petName(o.pet)+'이(가) 방송을 즐겼어요!');sfx('done');
@@ -2934,8 +2934,9 @@ const BADGES=[
 
 /* ===== sparkle items + collection ===== */
 const SPK_LINES=['우와, 반짝반짝해요! ✨','이거 너무 예뻐요. 보물 같아요!','눈이 부셔서 눈물이 날 것 같아요','특별한 방송이네요! 감동이에요','반짝이다! 소중히 볼게요','오늘 방송 최고예요 ✨'];
+const SPK_PITY=25,SPKB=[0,0,8,16];
 function spkChains(){return Object.keys(CHAINS)}
-function spkLevels(){const a=[];for(let l=4;l<=MAXLV;l++)a.push(l);return a}
+function spkLevels(){const a=[];for(let l=2;l<=MAXLV;l++)a.push(l);return a}
 function spkTotal(){return spkChains().length*spkLevels().length}
 function spkCount(){const d=st.spk||{};return Object.keys(d).filter(k=>d[k]).length}
 function spkCheck(){
@@ -2960,7 +2961,7 @@ function spkFound(c,nl,j){
   sfx('badge');
   const nm=CHAINS[c].names[nl];
   if(fresh){setTimeout(()=>bigText('✨ 새 반짝이! '+nm,true),900);setTimeout(()=>toast('반짝이 도감에 등록됐어요 · 위쪽 반짝이 버튼에서 볼 수 있어요'),1500)}
-  else setTimeout(()=>toast('✨ 반짝이 '+nm+'! 주문에 내면 코인이 2배예요'),900);
+  else setTimeout(()=>toast('✨ 반짝이 '+nm+'! 주문에 내면 코인이 2배'+(SPKB[nl]?' + 보너스 '+SPKB[nl]:'')+'예요'),900);
   spkCheck();save();
 }
 function spkOrder(k){
@@ -2974,7 +2975,7 @@ function spkOrder(k){
 function buildSpk(){
   const d=st.spk||{},tot=spkTotal(),n=spkCount();
   $('#spkdex').innerHTML='<div class="spkh"><h3>✨ 반짝이 도감</h3><b>'+n+'/'+tot+'</b></div>'+
-    '<p class="spkp">합칠 때 가끔 반짝이가 나와요. 주문에 내면 코인이 2배! 체인별로 다 모으면 코인 200, 전부 모으면 코인 500을 받아요.</p>'+
+    '<p class="spkp">합칠 때 가끔 나와요 (2단계부터). 주문에 내면 코인 2배, 낮은 단계는 보너스도 있어요. 오래 안 나오면 꼭 한 번 나와요. 체인 완성 200, 전체 완성 500 코인!</p>'+
     '<div class="spkg6">'+spkChains().map(c=>
       '<div class="spkl">'+CHAINS[c].title+'</div>'+spkLevels().map(l=>d[c+l]?
         '<div class="step spkon"><b>'+l+'</b><span class="spkic">'+ICON[c][l]+'</span><span>'+CHAINS[c].names[l]+'</span></div>':
@@ -3656,4 +3657,5 @@ document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{co
 <style>@media (hover:hover) and (pointer:fine) and (min-width:760px){.setinfo p{font-size:13px!important;line-height:1.35!important}.sndsheet .sndrow{padding:6px 12px}}</style>
 <style>/* 임시 공간: 손님 카드 맨 아래에 고정 (위아래 흔들림 방지) */.app:not(.pcgrid) #qslot{top:auto!important;bottom:0!important}</style>
 <style>/* 모바일: 제작 문구를 헤더 맨 아래 한 줄로 */.crsep{display:none}.app.compact .top{position:relative;padding-bottom:20px}.app.compact .ttl small.cr{display:block!important;position:absolute;left:6px;bottom:0;margin:0;width:max-content;max-width:none;overflow:visible;font-size:clamp(7.5px,2.3vw,9.5px);pointer-events:none}.app.compact .cr .crbr{display:none}.app.compact .cr .crsep{display:inline}</style>
+<style>.spkg6 .step{padding:3px 2px;gap:0}.spkg6 .spkic{max-width:30px}.spkg6 .step .qm{font-size:16px}.spkg6 .step.unk{min-height:0}@media (hover:hover) and (pointer:fine) and (min-width:760px){.spkg6 .spkic{max-width:30px}.spkg6 .step .qm{max-width:34px}.spkg6 .step b{font-size:10px}.spkp{font-size:11.5px;margin-bottom:5px}#spkdex{margin-top:8px}}</style>
 </body></html>
