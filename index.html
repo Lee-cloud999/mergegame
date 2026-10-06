@@ -2668,7 +2668,7 @@ function showEpilogue(){$('#epiOv').hidden=false;playEndChat()}
 $('#sumOv').addEventListener('click',e=>{if(e.target.id==='sumOv'||e.target.closest('[data-close]'))setTimeout(showEpilogue,300)});
 function epiDone(){endChatT.forEach(clearTimeout);endChatT=[];$('#epiOv').hidden=true;if(st.postDone)setTimeout(()=>endingStop(),300);setTimeout(postEnding,300)}
 $('#epiNext').addEventListener('click',epiDone);
-$('#epiOv').addEventListener('click',e=>{if(e.target.id==='epiOv')epiDone()});
+$('#epiOv').addEventListener('click',e=>{if(e.target.id==='epiOv'&&!$('#epiNext').disabled)epiDone()});
 function openReview(){
   const r=st.review;$('#revTa').value=r?r.text:'';
   $('#revDate').textContent=r?new Date(r.at).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 작성':'';
@@ -3533,6 +3533,7 @@ let endChatT=[];
 function playEndChat(){
   const box=document.getElementById('endChat');if(!box)return;
   endChatT.forEach(clearTimeout);endChatT=[];box.innerHTML='';
+  const nb=document.getElementById('epiNext');if(nb)nb.disabled=true;
   const cols=['#ff9ac2','#ffc36b','#ff7a7a','#7cc4ff','#c3a1ff','#ffe27a','#ffb3e6','#9be3b0'];
   const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
   END_CHAT.forEach((r,i)=>{
@@ -3542,7 +3543,8 @@ function playEndChat(){
       else{const n=document.createElement('b');n.style.color=cols[r[0]];n.textContent=petName(r[0]);d.appendChild(n);d.appendChild(document.createTextNode(r[1]))}
       box.appendChild(d);while(box.scrollHeight>box.clientHeight+2&&box.children.length>1)box.removeChild(box.firstChild);
     };
-    if(calm)add();else endChatT.push(setTimeout(add,900+i*1500+(r[2]==='adel'?900:0)));
+    const last=i===END_CHAT.length-1;
+    if(calm){add();if(last&&nb)nb.disabled=false}else endChatT.push(setTimeout(()=>{add();if(last&&nb)setTimeout(()=>{nb.disabled=false},500)},900+i*1500+(r[2]==='adel'?900:0)));
   });
 }
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#vnArtOv [data-close]'))endChatT.forEach(clearTimeout)});
@@ -3679,4 +3681,4 @@ html,body{touch-action:manipulation;overscroll-behavior:none}
   }
 })();
 </script>
-</body></html>
+<style>#epiNext:disabled{opacity:.4;filter:grayscale(.5);pointer-events:none}</style></body></html>
