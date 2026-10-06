@@ -808,6 +808,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="ptOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="플레이 기록"><h2>플레이 기록</h2><div id="ptRows" style="display:flex;flex-direction:column;gap:6px;width:100%;color:#4F31A6"></div><p id="ptNote" style="color:#4F31A6">게임을 켜 놓고 화면을 보고 있는 시간만 세요.</p><button class="close" id="ptOk" type="button">닫기</button></div></div>
 <div class="overlay" id="boxOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="재료함 열림"><h2 id="boxT"></h2><div class="gfrow"><div class="gfit" id="boxIc"></div></div><p id="boxD"></p><button class="close" id="boxOk" type="button">확인</button></div></div>
 <div class="overlay" id="zoneOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="구역 완성"><h2 id="zoneT"></h2><p>모두 꾸민 보상을 받았어요!</p><div class="gfrow" id="zoneRow"></div><p id="zoneNote"></p><button class="close" id="zoneOk" type="button">확인</button></div></div>
+<div class="overlay" id="nameOv" hidden style="z-index:130"><div class="sheet namesheet" role="dialog" aria-modal="true" aria-label="새 아가 이름 짓기"><h2>새 아가가 왔어요!</h2><img id="nmImg" class="nmimg" alt="" draggable="false"><p class="nmsub">이름을 지어 주세요. 나중에 아가 도감에서도 바꿀 수 있어요.</p><input id="nmInp" type="text" maxlength="8" aria-label="이름" autocomplete="off"><div class="nmbtns"><button class="close" id="nmOk" type="button">정하기</button><button class="close nmskip" id="nmSkip" type="button">기본 이름으로</button></div></div></div>
 <div class="overlay" id="genOv" hidden style="z-index:94"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="새 생성기"><h2>새 생성기가 생겼어요!</h2><div class="gfrow" id="genRowN"></div><p id="genNote"></p><button class="close" id="genOk" type="button">확인</button></div></div>
 <div class="overlay" id="sgOv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="특별 아가">
@@ -1650,7 +1651,7 @@ function claimMany(levels){
   levels.forEach(L=>{
     if(L>st.lv||st.claimed.includes(L))return;
     const r=rewardOf(L);st.claimed.push(L);st.coins+=r.coins;got++;
-    if(r.pet!=null&&!st.unlocked.includes(r.pet))st.unlocked.push(r.pet);
+    if(r.pet!=null&&!st.unlocked.includes(r.pet)&&vnState().seen[L]){st.unlocked.push(r.pet);st.petNameQ=(st.petNameQ||[]).concat(r.pet)}
     if(r.box)cells=cells.concat(spawnBox());
   });
   if(!got)return;
@@ -1697,7 +1698,7 @@ function openLevelUp(levels){
   pendingLv=levels;
   $('#lvBig').textContent='레벨 '+levels[levels.length-1]+' 달성!';
   const pl=levels.map(L=>rewardOf(L).pet).filter(p=>p!=null);
-  $('#lvPet').innerHTML=pl.length?'<img src="'+PET_IMG[pl[pl.length-1]]+'" alt="'+petName(pl[pl.length-1])+'">':'';
+  $('#lvPet').innerHTML='';
   $('#lvList').innerHTML=levels.map(L=>'<div class="lvrow"><span class="plv">Lv.'+L+'</span>'+chips(L)+'</div>').join('');
   $('#lvup').hidden=false;
 }
@@ -2324,8 +2325,9 @@ function vnPick(j){
 }
 function vnEnd(){
   clearInterval(vnTimer);
-  const first=vn&&vn.first,ttl=vn&&vn.ep.title,art=vn&&vn.ep.art;
+  const first=vn&&vn.first,ttl=vn&&vn.ep.title,art=vn&&vn.ep.art,_L=vn&&vn.L;
   $('#vn').hidden=true;vn=null;bgmSwitch('main');
+  {const pp=first?rewardOf(_L).pet:null;if(pp!=null&&!st.unlocked.includes(pp)){st.unlocked.push(pp);st.petNameQ=(st.petNameQ||[]).concat(pp)}}
   save();renderTop();
   if(first){sfx('done');toast('「'+ttl+'」 완료!')}
   if(first&&art)setTimeout(()=>endingSeq(),400);
@@ -3681,4 +3683,36 @@ html,body{touch-action:manipulation;overscroll-behavior:none}
   }
 })();
 </script>
-<style>#epiNext:disabled{opacity:.4;filter:grayscale(.5);pointer-events:none}</style></body></html>
+<style>#epiNext:disabled{opacity:.4;filter:grayscale(.5);pointer-events:none}</style><style>
+.namesheet{align-items:center;text-align:center;gap:8px}
+.namesheet .nmimg{width:min(46%,150px);height:auto;filter:drop-shadow(0 4px 6px rgba(80,40,120,.25));animation:nmPop .5s ease both}
+@keyframes nmPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.namesheet .nmsub{margin:0;font-size:13px;color:#7a6a95}
+.namesheet #nmInp{width:min(100%,260px);padding:10px 12px;border:2px solid #cdb8f3;border-radius:12px;font:inherit;font-size:16px;text-align:center;color:#4b3a6e;background:#fff}
+.nmbtns{display:flex;flex-direction:column;gap:6px;width:min(100%,260px)}
+.nmbtns .nmskip{background:#efe8fb;color:#7a5fb0;box-shadow:none}
+</style>
+<script>
+/* 새 아가: 스토리가 끝나 해금된 뒤 이름 짓기 창 */
+let nmP=null;
+function nmClose(){$('#nameOv').hidden=true;nmP=null;scheduleTut()}
+function nmAsk(p){
+  nmP=p;$('#nmImg').src=PET_IMG[p];$('#nmInp').value=petName(p);
+  $('#nameOv').hidden=false;sfx('unlock');
+  if(matchMedia('(hover:hover)').matches)setTimeout(()=>{const i=$('#nmInp');i.focus();i.select()},250);
+}
+function nmDone(save_){
+  const p=nmP;if(p==null)return;
+  if(save_){const v=$('#nmInp').value.trim().slice(0,8);st.petName=st.petName||{};if(!v||v===PET_NAME[p])delete st.petName[p];else st.petName[p]=v;toast('「'+petName(p)+'」(이)가 방송국에 왔어요')}
+  st.petNameQ=(st.petNameQ||[]).filter(x=>x!==p);save();renderOrders();if(!$('#dex').hidden)renderDex();nmClose();
+}
+$('#nmOk').addEventListener('click',()=>nmDone(true));
+$('#nmSkip').addEventListener('click',()=>nmDone(false));
+$('#nmInp').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();nmDone(true)}});
+$('#nameOv').addEventListener('click',e=>{if(e.target.id==='nameOv')nmDone(false)});
+setInterval(()=>{
+  if(typeof st==='undefined'||!st||!st.petNameQ||!st.petNameQ.length||!gameOn||vn||endingOn||anyOverlay())return;
+  nmAsk(st.petNameQ[0]);
+},1200);
+</script>
+</body></html>
