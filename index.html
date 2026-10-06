@@ -1298,12 +1298,22 @@ const ORD_E=['응원 해주세요!','응원 ㄱㄱ','응원 해줘요!','응원 
 function orderLabel(o){const cs=[...new Set(o.needs.map(n=>n.c))];if(o.lb==null)o.lb=Math.floor(Math.random()*5);
   if(cs.length!==1)return '풀세트'+ORD_SUF[o.lb];
   return cs[0]==='E'?ORD_E[o.lb]:ORD_W[cs[0]]+ORD_SUF[o.lb]}
-const ORD_SAY=['고마워요!','잘 먹을게요!','우와, 딱 이거예요!','방송 너무 재밌어요!','또 올게요!','와, 최고예요!','기다린 보람이 있어요','역시 아델 방송국!','헤헤, 행복해요','내일도 올게요!'];
+const ORD_SAY={
+  5:['오늘도 조용히 잘 보고 있어요','채팅은 아직 어렵지만… 고마워요!','처음부터 쭉 봤어요, 헤헤'],
+  2:['저… 삐와이의 왈쯔도 불러 주실 수 있나요?','리버브 켠 목소리가 좋아요','조심스럽게 물어봐도 되죠?'],
+  0:['저 딸렌지주 공동 연구자예요!','아저씨, 또 깔깔이 입고 계시네요','딸기랑 오렌지, 역시 섞어야 맛있어요'],
+  1:['따뜻한 꿀차 드시고 힘내요!','목 아프실 땐 한 번만 더… 아, 아니에요!','용돈 털어서 왔어요!'],
+  4:['시참은 안 해도 괜찮아요!','엔더의 눈은 이제 다 모으셨죠?','훈수는 안 둘게요… 아마도요'],
+  7:['오이는 빼 주세요, 두 번이요!','오이 냉면은 클립 따놨어요','이건 오이 향 없어서 안심이에요'],
+  6:['지각하면 냥체!','벌칙은 기억하고 있다냥','오늘은 제 시간에 오셨네요?'],
+  3:['아직 방종 공지 안 하셨죠?','내일도 기다릴게요!','오늘 처음 왔는데 벌써 좋아요']
+};
 function orderSay(k){
   const card=$('#orders').children[k],pet=card&&card.querySelector('.pet');if(!pet)return;
+  const _o=st.orders[k],_ls=_o&&ORD_SAY[_o.pet];if(!_ls)return;
   const r=pet.getBoundingClientRect();if(!r.width)return;
   document.querySelectorAll('.say.osay').forEach(e=>e.remove());
-  const e=document.createElement('div');e.className='say osay';e.textContent=ORD_SAY[Math.floor(Math.random()*ORD_SAY.length)];
+  const e=document.createElement('div');e.className='say osay';e.textContent=_ls[Math.floor(Math.random()*_ls.length)];
   e.style.left=Math.min(Math.max(r.left+r.width/2,70),innerWidth-70)+'px';e.style.top=(r.top+2)+'px';
   document.body.appendChild(e);
   if(!reduce)e.animate([{opacity:0,transform:'translate(-50%,-90%) scale(.8)'},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.15},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.85},{opacity:0,transform:'translate(-50%,-110%) scale(1)'}],{duration:2200,easing:'ease-out'});
