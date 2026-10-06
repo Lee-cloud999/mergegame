@@ -1726,7 +1726,7 @@ const QTYPES=[
 ];
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dayIndex(k){const a=k.split('-').map(Number);return Math.round(Date.UTC(a[0],a[1]-1,a[2])/864e5)}
-function curDay(){return Math.max(1,dayIndex(todayKey())-dayIndex(st.q.start)+1)}
+function curDay(){return Math.max(1,dayIndex(todayKey())-dayIndex(st.q.start)+1+(st.q.skip||0))}
 function questSync(){
   let rolled=false;
   if(!st.q||!st.q.start){st.q={cycle:0,start:todayKey(),days:{}}}
@@ -1776,7 +1776,7 @@ function renderQuests(){
   if(viewDay>today)viewDay=today;
   const dd=dayData(viewDay),tasks=tasksFor(st.q.cycle,viewDay),rw=taskReward(viewDay);
   $('#qTime').textContent=fmtLeft();
-  $('#qInfo').textContent=(st.q.cycle+1)+'번째 7일 과제예요. 7일차가 끝나면 새 과제로 다시 1일차부터 시작해요.';
+  $('#qInfo').textContent=(st.q.cycle+1)+'번째 7일 과제예요. 7일차가 끝나면 새 과제로 다시 1일차부터 시작해요.'+(curDay()<7?' 일일 과제를 5번 열 때마다 다음 날 과제가 열려요. ('+(st.q.press||0)+'/5)':'');
   let tb='';
   for(let d=1;d<=7;d++){
     const lock=d>today,can=!lock&&(tasksFor(st.q.cycle,d).some(t=>!dayData(d).c.includes(t.id)&&taskProg(d,t)>=t.target)||giftReady(d));
@@ -1823,7 +1823,14 @@ function questTick(){
   if(!$('#quest').hidden)$('#qTime').textContent=fmtLeft();
   if(before!==st.q.cycle)renderTop();
 }
-$('#questBtn').addEventListener('click',()=>{questSync();viewDay=Math.min(7,curDay());renderQuests();$('#quest').hidden=false});
+$('#questBtn').addEventListener('click',()=>{
+  questSync();
+  st.q.press=(st.q.press||0)+1;let opened=false;
+  if(st.q.press>=5){st.q.press=0;if(curDay()<7){st.q.skip=(st.q.skip||0)+1;opened=true}}
+  save();
+  viewDay=Math.min(7,curDay());renderQuests();$('#quest').hidden=false;
+  if(opened)setTimeout(()=>{toast('다음 날 과제가 열렸어요!');sfx('unlock')},250);
+});
 $('#qTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(b&&!b.disabled){viewDay=+b.dataset.d;renderQuests()}});
 $('#qList').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(b)claimTask(viewDay,b.dataset.t)});
 $('#qGift').addEventListener('click',()=>claimGift(viewDay));
