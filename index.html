@@ -1675,7 +1675,7 @@ function renderDex(){
   $('#dexGrid').innerHTML=PET_IMG.map((img,p)=>p).sort((x,y)=>unlockLv(x)-unlockLv(y)).map(p=>{
     const img=PET_IMG[p];
     const u=st.unlocked.includes(p),out=u&&st.petHide&&st.petHide[p];
-    return '<div class="dcell'+(u?' ok':' lock')+(dexSel===p?' sel':'')+'"'+(u?' data-p="'+p+'" role="button" tabindex="0"':'')+'><img src="'+img+'" alt="'+(u?petName(p):'잠긴 아가')+'" draggable="false"><b>'+(u?escH(petName(p)):'???')+'</b><span>'+(u?((st.fed[p]||0)+'번 방문'):'Lv.'+unlockLv(p)+' 해금')+'</span>'+(out?'<i class="dout">방송국 밖</i>':'')+'</div>';
+    return '<div class="dcell'+(u?' ok':' lock')+(dexSel===p?' sel':'')+'"'+(u?' data-p="'+p+'" role="button" tabindex="0"':'')+'><img src="'+img+'" alt="'+(u?petName(p):'잠긴 아가')+'" draggable="false"><b>'+(u?escH(petName(p)):'???')+'</b>'+(u?'':'<span>Lv.'+unlockLv(p)+' 해금</span>')+(out?'<i class="dout">방송국 밖</i>':'')+'</div>';
   }).join('');
   const M=$('#dexMgr');
   if(dexSel==null||!st.unlocked.includes(dexSel)){
