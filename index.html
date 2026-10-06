@@ -1458,7 +1458,7 @@ function act(i,j){
     const dust=a.c==='U'?i:j,tg=a.c==='U'?j:i,t=st.cells[tg];
     if(t.fx||t.l>=MAXLV){renderBoard();toast(t.fx?'회색 아이템에는 쓸 수 없어요':'이미 최고 단계예요');sfx('err');return}
     t.l+=1;st.cells[dust]=null;if(tg!==j){st.cells[j]=t;st.cells[tg]=null}
-    gainXp(1);track('merge');sel=null;renderBoard();pop(j,true,2);refresh();sfx('merge',t.l,1);mergeFx(j,t.l,1,t.c);
+    gainXp(1);track('merge');sel=null;renderBoard();pop(j,true,2);refresh();sfx('merge',t.l,1);mergeFx(j,t.l,1,t.c);if(t.sp&&t.l>=2)spkFound(t.c,t.l,j);
     if(t.l>=4)bigText(CHAINS[t.c].names[t.l]+' 완성!',t.l===MAXLV);
     toast('별가루로 '+CHAINS[t.c].names[t.l]+'(으)로 올라갔어요!');return}
   if(b&&b.fx&&!canMerge(i,j)){renderBoard();toast('회색 아이템은 같은 아이템과만 합칠 수 있어요');sfx('err');return}
@@ -1466,7 +1466,7 @@ function act(i,j){
   if(canMerge(i,j)){
     const wasFx=!!b.fx,nl=a.l+1,now=Date.now();
     combo=(now-lastMergeAt<2200)?combo+1:1;lastMergeAt=now;
-    st.cells[i]=null;st.cells[j]={c:a.c,l:nl};if(nl>=2&&nl<=MAXLV&&a.c!=='U'&&st.tutStep>=3){st.spkPity=(st.spkPity||0)+1;if(st.spkPity>=SPK_PITY||Math.random()<(nl>=4?(st.lv>=12?.08:.05):.03)){st.cells[j].sp=1;st.spkPity=0}}st.tut=false;track('merge');st.nMerge=(st.nMerge||0)+1;if(nl>=3)track('merge3');
+    st.cells[i]=null;st.cells[j]={c:a.c,l:nl};if((a.sp||b.sp)&&nl<=MAXLV){st.cells[j].sp=1}else if(nl>=2&&nl<=MAXLV&&a.c!=='U'&&st.tutStep>=3){st.spkPity=(st.spkPity||0)+1;if(st.spkPity>=SPK_PITY||Math.random()<(nl>=4?(st.lv>=12?.08:.05):.03)){st.cells[j].sp=1;st.spkPity=0}}st.tut=false;track('merge');st.nMerge=(st.nMerge||0)+1;if(nl>=3)track('merge3');
     let bonus=0;if(combo>=3){bonus=combo-1;st.coins+=bonus}
     gainXp(1);
     let bj=null;
@@ -2975,7 +2975,7 @@ function spkOrder(k){
 function buildSpk(){
   const d=st.spk||{},tot=spkTotal(),n=spkCount();
   $('#spkdex').innerHTML='<div class="spkh"><h3>✨ 반짝이 도감</h3><b>'+n+'/'+tot+'</b></div>'+
-    '<p class="spkp">합칠 때 가끔 나와요 (2단계부터). 주문에 내면 코인 2배, 낮은 단계는 보너스도 있어요. 오래 안 나오면 꼭 한 번 나와요. 체인 완성 200, 전체 완성 500 코인!</p>'+
+    '<p class="spkp">합칠 때 가끔 나와요 (2단계부터). 반짝이는 합쳐도 계속 유지돼요! 주문에 내면 코인 2배, 낮은 단계는 보너스도 있어요. 오래 안 나오면 꼭 한 번 나와요. 체인 완성 200, 전체 완성 500 코인!</p>'+
     '<div class="spkg6">'+spkChains().map(c=>
       '<div class="spkl">'+CHAINS[c].title+'</div>'+spkLevels().map(l=>d[c+l]?
         '<div class="step spkon"><b>'+l+'</b><span class="spkic">'+ICON[c][l]+'</span><span>'+CHAINS[c].names[l]+'</span></div>':
