@@ -1752,7 +1752,7 @@ function tasksFor(cycle,day){
   return t;
 }
 function taskProg(d,t){return dayData(d).p[t.type]||0}
-function taskReward(d){return 10+5*d+3*st.q.cycle}
+function taskReward(d){return 20+10*d+5*st.q.cycle}
 function track(type,n){
   questSync();
   const dd=dayData(curDay());dd.p[type]=(dd.p[type]||0)+(n||1);
@@ -1793,7 +1793,7 @@ function renderQuests(){
   const sc=Math.min(3,dd.c.length);
   $('#qStars').innerHTML=[0,1,2].map(i=>'<span class="qs'+(i<sc?'':' off')+'">'+STARSV+'</span>').join('');
   const g=$('#qGift');g.innerHTML=BOX;g.disabled=!giftReady(viewDay);g.classList.toggle('ready',giftReady(viewDay));
-  $('#qNote').textContent=dd.g?'이 날의 선물 상자를 받았어요.':giftReady(viewDay)?'별 3개를 모았어요. 선물 상자를 눌러 열어 보세요!':'과제 보상을 3개 받으면 선물 상자를 열 수 있어요.'+(viewDay===7?' 7일차 선물은 상자 2개, 코인 100개, 별가루 1개예요.':'');
+  $('#qNote').textContent=dd.g?'이 날의 선물 상자를 받았어요.':giftReady(viewDay)?'별 3개를 모았어요. 선물 상자를 눌러 열어 보세요!':'과제 보상을 3개 받으면 선물 상자를 열 수 있어요.'+(viewDay===7?' 7일차 선물은 상자 2개, 코인 200개, 별가루 1개예요.':'');
 }
 function claimTask(d,id){
   const dd=dayData(d),t=tasksFor(st.q.cycle,d).find(x=>x.id===id);
@@ -1807,10 +1807,10 @@ function claimGift(d){
   const dd=dayData(d);dd.g=true;
   const boxes=d===7?2:1;let cells=[];
   for(let k=0;k<boxes;k++)cells=cells.concat(spawnBox());
-  st.coins+=d===7?100:30;
+  st.coins+=d===7?200:60;
   let dustN=0,dustCoin=0;if(d===7){qGive('U',1);dustN=1}
   sel=null;renderBoard();cells.forEach(j=>pop(j,true));refresh();renderQuests();
-  const gc=d===7?100:30;
+  const gc=d===7?200:60;
   $('#gfRow').innerHTML='<div class="gfit"><span class="gfic">'+COIN+'</span><span>코인 '+gc+'개</span></div><div class="gfit"><span class="gfic">'+BOX+'</span><span>재료 상자 '+boxes+'개</span></div>'+(d===7?'<div class="gfit"><span class="gfic">'+ICON.U[1]+'</span><span>별가루 1개</span></div>':'');
   $('#gfNote').textContent='재료 상자 1개당 재료 3개가 왼쪽 임시 공간에 도착해요. 임시 공간을 누를 때마다 보드에 하나씩 놓여요.';
   $('#giftOv').hidden=false;sfx('done');
