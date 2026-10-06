@@ -3539,7 +3539,7 @@ function playEndChat(){
   END_CHAT.forEach((r,i)=>{
     const add=()=>{
       const d=document.createElement('div');d.className='cm'+(r[2]?' '+r[2]:'');
-      if(r[2]==='adel'||r[2]==='sys'||r[2]==='fin'){d.textContent=(r[2]==='adel'?r[0]+'  ':'')+r[1]}
+      if(r[2]==='adel'||r[2]==='sys'||r[2]==='fin'){d.textContent=r[1]}
       else{const n=document.createElement('b');n.style.color=cols[r[0]];n.textContent=petName(r[0]);d.appendChild(n);d.appendChild(document.createTextNode(r[1]))}
       box.appendChild(d);while(box.scrollHeight>box.clientHeight+2&&box.children.length>1)box.removeChild(box.firstChild);
     };
