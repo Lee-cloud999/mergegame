@@ -3011,9 +3011,9 @@ function spkOrder(k){
 function buildSpk(){
   const d=st.spk||{},tot=spkTotal(),n=spkCount();
   $('#spkdex').innerHTML='<div class="spkh"><h3>✨ 반짝이 도감</h3><b>'+n+'/'+tot+'</b></div>'+
-    '<p class="spkp">합칠 때 가끔 나와요 (3단계부터). 반짝이는 합쳐도 계속 유지돼요! 주문에 내면 코인 2배, 낮은 단계는 보너스도 있어요. 오래 안 나오면 꼭 한 번 나와요. 체인 완성 200, 전체 완성 500 코인!</p>'+
+    '<p class="spkp">3단계부터 합칠 때 가끔 나와요. 반짝이는 합쳐도 계속 유지되고, 주문에 내면 코인이 2배예요(3단계는 보너스도 있어요). 오래 안 나오면 꼭 한 번 나와요. 체인을 다 모으면 200코인, 전부 모으면 500코인!</p>'+
     '<div class="spkg6">'+spkChains().map(c=>
-      '<div class="spkl">'+CHAINS[c].title+'</div>'+spkLevels().map(l=>d[c+l]?
+      '<div class="spkl"><span>'+CHAINS[c].title+'<small>'+spkLevels().filter(l=>d[c+l]).length+'/'+spkLevels().length+'</small></span></div>'+spkLevels().map(l=>d[c+l]?
         '<div class="step spkon"><b>'+l+'</b><span class="spkic">'+ICON[c][l]+'</span><span>'+CHAINS[c].names[l]+'</span></div>':
         '<div class="step unk"><b>'+l+'</b><i class="qm">?</i><span>?</span></div>').join('')
     ).join('')+'</div>';
@@ -3751,4 +3751,4 @@ setInterval(()=>{
 </script>
 <style>#quest .qhead h2{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:default}</style><style>.pnm{display:none}
 .app.pcgrid .order .sign{position:relative}
-.app.pcgrid .order .pnm{display:block;position:absolute;left:8px;top:-8px;z-index:3;padding:1px 8px;border-radius:9px;background:#fff;border:2px solid #cdb8f3;color:#6B4FA0;font-family:var(--display);font-size:11px;line-height:1.3;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}</style><style>.say.osay{font-size:17px;padding:6px 14px;max-width:80vw;word-break:keep-all}</style></body></html>
+.app.pcgrid .order .pnm{display:block;position:absolute;left:8px;top:-8px;z-index:3;padding:1px 8px;border-radius:9px;background:#fff;border:2px solid #cdb8f3;color:#6B4FA0;font-family:var(--display);font-size:11px;line-height:1.3;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}</style><style>.say.osay{font-size:17px;padding:6px 14px;max-width:80vw;word-break:keep-all}</style><style>.spkg6{grid-template-columns:minmax(0,.8fr) repeat(4,minmax(0,1fr))!important;gap:4px!important}.spkg6 .spkl span{display:flex;flex-direction:column;line-height:1.2}.spkg6 .spkl small{font-size:10px;color:#e8940c;font-family:var(--display)}.spkg6 .spkic{max-width:34px!important}</style></body></html>
