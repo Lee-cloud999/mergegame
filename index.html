@@ -1109,7 +1109,7 @@ function findPair(){
 }
 function ctr(el){const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2,top:r.top,bottom:r.bottom}}
 function renderTutorial(){
-  if(!st||st.tutStep>=3||anyOverlay()||(drag&&drag.on)){tutClear();return}
+  if(!st||st.tutStep>=3||anyOverlay()||(st.petNameQ&&st.petNameQ.length)||(drag&&drag.on)){tutClear();return}
   let a,b=null,text;
   if(st.tutStep===0){
     const p=findPair();
@@ -1231,7 +1231,7 @@ function newOrder(k){
 const FX_SEED=[];
 function seed(){
   const cells=Array(N).fill(null);FX_SEED.forEach(a=>{cells[a[0]]={c:a[1],l:a[2],fx:1}});
-  return{cells,coins:30,xp:0,lv:1,e:40,eAt:Date.now(),fxSeeded:2,tut:true,tutStep:0,genPos:{B:0,E:1,A:2,C:3,F:4,D:5},claimed:[],unlocked:[5],fed:{},dec:{},zoneDone:[],bonusE:0,locks:[36,37,38,39,40,41],unlockN:0,orders:[mkOrder(5,[['B',2]],'easy'),mkOrder(5,[['B',1],['B',2]],'mid'),mkOrder(5,[['B',4]],'hard')]};
+  return{cells,coins:30,xp:0,lv:1,e:40,eAt:Date.now(),fxSeeded:2,tut:true,tutStep:0,genPos:{B:0,E:1,A:2,C:3,F:4,D:5},claimed:[],unlocked:[5],petNameQ:[5],fed:{},dec:{},zoneDone:[],bonusE:0,locks:[36,37,38,39,40,41],unlockN:0,orders:[mkOrder(5,[['B',2]],'easy'),mkOrder(5,[['B',1],['B',2]],'mid'),mkOrder(5,[['B',4]],'hard')]};
 }
 function load(){
   try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.cells&&o.cells.length===N&&o.orders&&o.orders.length<=3){
