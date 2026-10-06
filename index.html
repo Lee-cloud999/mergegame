@@ -1298,6 +1298,17 @@ const ORD_E=['응원 해주세요!','응원 ㄱㄱ','응원 해줘요!','응원 
 function orderLabel(o){const cs=[...new Set(o.needs.map(n=>n.c))];if(o.lb==null)o.lb=Math.floor(Math.random()*5);
   if(cs.length!==1)return '풀세트'+ORD_SUF[o.lb];
   return cs[0]==='E'?ORD_E[o.lb]:ORD_W[cs[0]]+ORD_SUF[o.lb]}
+const ORD_SAY=['고마워요!','잘 먹을게요!','우와, 딱 이거예요!','방송 너무 재밌어요!','또 올게요!','와, 최고예요!','기다린 보람이 있어요','역시 아델 방송국!','헤헤, 행복해요','내일도 올게요!'];
+function orderSay(k){
+  const card=$('#orders').children[k],pet=card&&card.querySelector('.pet');if(!pet)return;
+  const r=pet.getBoundingClientRect();if(!r.width)return;
+  document.querySelectorAll('.say.osay').forEach(e=>e.remove());
+  const e=document.createElement('div');e.className='say osay';e.textContent=ORD_SAY[Math.floor(Math.random()*ORD_SAY.length)];
+  e.style.left=Math.min(Math.max(r.left+r.width/2,70),innerWidth-70)+'px';e.style.top=(r.top+2)+'px';
+  document.body.appendChild(e);
+  if(!reduce)e.animate([{opacity:0,transform:'translate(-50%,-90%) scale(.8)'},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.15},{opacity:1,transform:'translate(-50%,-100%) scale(1)',offset:.85},{opacity:0,transform:'translate(-50%,-110%) scale(1)'}],{duration:2200,easing:'ease-out'});
+  setTimeout(()=>e.remove(),2200);
+}
 function renderOrders(fresh){
   $('#orders').innerHTML=st.orders.map((o,k)=>
     '<div class="order '+(o.spk?'spkd ':'')+(o.state==='done'?'done ':'')+(findMatches(k).length?'ready ':'')+((k===fresh||fresh==='all'||(Array.isArray(fresh)&&fresh.includes(k)))?'enter':'')+'" data-k="'+k+'">'+
@@ -1508,7 +1519,7 @@ function deliver(i,k){
     o.state='done';track('deliver');st.nDeliv=(st.nDeliv||0)+1;const _cn=o.coins*(o.spk?2:1)+(o.spkb||0);track('coin',_cn);st.coins+=_cn;st.fed[o.pet]=(st.fed[o.pet]||0)+1;gainXp(o.xp);
     refresh();
     floatText(k,'+'+_cn+(o.spk?' ✨':''));
-    toast(petName(o.pet)+'이(가) 방송을 즐겼어요!');sfx('done');
+    toast(petName(o.pet)+'이(가) 방송을 즐겼어요!');sfx('done');if(!o.spk)orderSay(k);
     setTimeout(()=>{if(st.fin===1){save();renderOrders();if(st.orders.every(x=>x.state==='done'))finDone();return}orderLeave(o)},700);
   }else{refresh();floatText(k,'방송 완료!');sfx('coin')}
   tutAdvance('deliver');
