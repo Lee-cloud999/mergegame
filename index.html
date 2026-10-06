@@ -779,7 +779,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
   </div>
   <nav class="tools" aria-label="메뉴">
     <button class="tool" id="dexBtn" type="button">손님 도감</button>
-    <button class="tool" id="decorBtn" type="button">방송 꾸미기<span class="badge" id="decorBadge" hidden>!</span></button>
+    <button class="tool" id="decorBtn" type="button">방송국 꾸미기<span class="badge" id="decorBadge" hidden>!</span></button>
     <button class="tool" id="questBtn" type="button">일일 과제<span class="badge" id="questBadge" hidden>0</span></button>
     <button class="tool" id="passBtn" type="button">레벨 패스<span class="badge" id="passBadge" hidden>0</span></button>
     <button class="tool" id="shopBtn" type="button">상점</button>
@@ -857,8 +857,8 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
   </div>
 </div>
 <div class="overlay full" id="decor" hidden>
-  <div class="dwrap" role="dialog" aria-modal="true" aria-label="방송 꾸미기">
-    <div class="dtop"><h2>방송 꾸미기</h2><button class="xbtn" data-close type="button" aria-label="닫기"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5L15 15M15 5L5 15" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button></div>
+  <div class="dwrap" role="dialog" aria-modal="true" aria-label="방송국 꾸미기">
+    <div class="dtop"><h2>방송국 꾸미기</h2><button class="xbtn" data-close type="button" aria-label="닫기"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5L15 15M15 5L5 15" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button></div>
     <div class="zones" id="zones"></div>
     <div class="dscene" id="dscene"></div>
     <div class="dpanel" id="dPanel"></div>
@@ -1992,14 +1992,14 @@ function signHTML(k,cls,style,anim,attrs){
   return '<div class="sgn '+cls+(anim?' signin':'')+'"'+(attrs||'')+' style="aspect-ratio:'+d.ar.toFixed(4)+';'+style+'"><img src="'+SIGN_IMG[kk]+'" alt="" draggable="false"'+(d.gl?' style="filter:'+d.gl+'"':'')+'><span class="signtxt" style="left:'+(d.cx*100)+'%;top:'+(d.cy*100)+'%;--fs:'+d.fs+';color:'+d.f+';-webkit-text-stroke:calc('+d.sw+'*1cqw) '+(d.k||'transparent')+(d.sh?';text-shadow:'+d.sh:'')+'">'+SIGN_TEXT+'</span></div>';
 }
 const SPOTS=[
-  {id:'sign',zone:0,n:'간판',cost:60,styles:SIGNS.map(x=>x.n),box:[112,0,136,110],anc:[180,56]},
-  {id:'curtain',zone:0,n:'무대 커튼',cost:90,styles:[],box:[88,84,184,154],anc:[180,190]},
-  {id:'plant',zone:0,n:'화분',cost:120,styles:[],box:[-6,190,108,140],anc:[44,250]},
-  {id:'counter',zone:1,n:'방송 데스크',cost:200,gen:'A',styles:[],box:[194,176,168,166],anc:[290,288]},
-  {id:'lamp',zone:1,n:'ON AIR 사인',cost:260,styles:[],box:[16,0,88,92],anc:[60,60]},
-  {id:'machine',zone:1,n:'마이크',cost:330,gen:'B',styles:[],box:[94,208,108,122],anc:[148,250]},
-  {id:'rug',zone:2,n:'러그',cost:420,styles:[],box:[66,386,228,146],anc:[180,452]},
-  {id:'frame',zone:2,n:'벽 포스터',cost:500,styles:[],box:[6,84,84,130],anc:[48,150]}
+  {id:'sign',zone:0,n:'간판',cost:90,styles:SIGNS.map(x=>x.n),box:[112,0,136,110],anc:[180,56]},
+  {id:'curtain',zone:0,n:'무대 커튼',cost:140,styles:[],box:[88,84,184,154],anc:[180,190]},
+  {id:'plant',zone:0,n:'화분',cost:180,styles:[],box:[-6,190,108,140],anc:[44,250]},
+  {id:'counter',zone:1,n:'방송 데스크',cost:300,gen:'A',styles:[],box:[194,176,168,166],anc:[290,288]},
+  {id:'lamp',zone:1,n:'ON AIR 사인',cost:390,styles:[],box:[16,0,88,92],anc:[60,60]},
+  {id:'machine',zone:1,n:'마이크',cost:500,gen:'B',styles:[],box:[94,208,108,122],anc:[148,250]},
+  {id:'rug',zone:2,n:'러그',cost:630,styles:[],box:[66,386,228,146],anc:[180,452]},
+  {id:'frame',zone:2,n:'벽 포스터',cost:750,styles:[],box:[6,84,84,130],anc:[48,150]}
 ];
 const DRAW_ORDER=['lamp','sign','frame','curtain','plant','rug','counter','machine'];
 const PSLOT=[[70,400,66],[198,426,66],[276,374,64],[304,470,66],[118,494,68],[226,520,68],[42,532,66],[150,452,60]];
@@ -2014,7 +2014,7 @@ SPOTS.find(x=>x.id==='frame').styles=POSTERS.map(x=>x.n);
 SPOTS.find(x=>x.id==='plant').styles=POTS.map(x=>x.n);
 let dSel=null,dPick=0,dJust=null,dView=null;
 const owned=id=>st.dec[id]!=null;
-const FREE_STY=1; const stylePrice=k=>k<FREE_STY?0:k<2?50:k<4?100:150;
+const FREE_STY=1; const stylePrice=k=>k<FREE_STY?0:k<2?80:k<4?150:220;
 const styleOwned=(id,k)=>k<FREE_STY||(st.own&&st.own[id]&&st.own[id].includes(k))||st.dec[id]===k;
 const shown=id=>(dSel===id&&dPick!=null)?dPick:st.dec[id];
 const spotView=sp=>!owned(sp.id)&&dView!=null&&sp.zone===dView&&sp.zone>curZone();
@@ -3315,7 +3315,7 @@ html .overlay .sheet:not(#_x):not(.roulsheet){zoom:var(--sz,1)!important;max-hei
 })();
 </script>
 <style>
-/* PC: 방송 꾸미기 – 장면을 크게(왼쪽), 구역 탭과 안내 패널은 오른쪽에 크게 */
+/* PC: 방송국 꾸미기 – 장면을 크게(왼쪽), 구역 탭과 안내 패널은 오른쪽에 크게 */
 @media (hover:hover) and (pointer:fine) and (min-width:900px), (min-width:900px) and (min-height:600px) and (orientation:landscape){
 #decor .dwrap{max-width:min(1240px,96vw);display:grid;grid-template-columns:auto minmax(300px,1fr);grid-template-rows:auto 1fr;grid-template-areas:"top zones" "scene panel";column-gap:28px;row-gap:14px;align-content:start;align-items:start;padding-inline:24px}
 #decor .dtop{grid-area:top}
@@ -3339,7 +3339,7 @@ html .overlay .sheet:not(#_x):not(.roulsheet){zoom:var(--sz,1)!important;max-hei
 }
 </style>
 <style>
-/* PC: 방송 꾸미기 선택 창 – 2열 × 3행으로 크게 */
+/* PC: 방송국 꾸미기 선택 창 – 2열 × 3행으로 크게 */
 @media (hover:hover) and (pointer:fine) and (min-width:900px), (min-width:900px) and (min-height:600px) and (orientation:landscape){
 #decor .stys,#decor .stys.many{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:none;overflow:visible;padding:2px}
 #decor .stys .sty,#decor .stys.many .sty{padding:6px 6px 8px;font-size:14px}
@@ -3397,7 +3397,7 @@ html body p,html body small,html body .hint,html body .etime,html body .xptxt,ht
 })();
 </script>
 <style>
-/* 방송 꾸미기 구역 탭: 항상 한 줄로 */
+/* 방송국 꾸미기 구역 탭: 항상 한 줄로 */
 #decor .zones .zc{white-space:nowrap;padding-inline:4px;font-size:clamp(11px,3.4vw,14px);letter-spacing:-.3px;gap:3px;overflow:hidden}
 #decor .zones .zc svg{width:12px;height:12px;flex:none}
 </style>
