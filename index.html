@@ -808,7 +808,7 @@ h1{white-space:nowrap;color:var(--ink);-webkit-text-stroke:0;paint-order:normal;
 <div class="overlay" id="ptOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="플레이 기록"><h2>플레이 기록</h2><div id="ptRows" style="display:flex;flex-direction:column;gap:6px;width:100%;color:#4F31A6"></div><p id="ptNote" style="color:#4F31A6">게임을 켜 놓고 화면을 보고 있는 시간만 세요.</p><button class="close" id="ptOk" type="button">닫기</button></div></div>
 <div class="overlay" id="boxOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="재료함 열림"><h2 id="boxT"></h2><div class="gfrow"><div class="gfit" id="boxIc"></div></div><p id="boxD"></p><button class="close" id="boxOk" type="button">확인</button></div></div>
 <div class="overlay" id="zoneOv" hidden style="z-index:300"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="구역 완성"><h2 id="zoneT"></h2><p>모두 꾸민 보상을 받았어요!</p><div class="gfrow" id="zoneRow"></div><p id="zoneNote"></p><button class="close" id="zoneOk" type="button">확인</button></div></div>
-<div class="overlay" id="nameOv" hidden style="z-index:130"><div class="sheet namesheet" role="dialog" aria-modal="true" aria-label="새 아가 이름 짓기"><h2>새 아가가 왔어요!</h2><img id="nmImg" class="nmimg" alt="" draggable="false"><p class="nmsub">이름을 지어 주세요. 나중에 아가 도감에서도 바꿀 수 있어요.</p><input id="nmInp" type="text" maxlength="8" aria-label="이름" autocomplete="off"><div class="nmbtns"><button class="close" id="nmOk" type="button">정하기</button><button class="close nmskip" id="nmSkip" type="button">기본 이름으로</button></div></div></div>
+<div class="overlay" id="nameOv" hidden style="z-index:130"><div class="sheet namesheet" role="dialog" aria-modal="true" aria-label="새 아가 이름 짓기"><h2>아가 이름을 지어 주세요</h2><img id="nmImg" class="nmimg" alt="" draggable="false"><p class="nmsub">이름을 정해 주세요. 나중에 아가 도감에서도 바꿀 수 있어요.</p><input id="nmInp" type="text" maxlength="8" aria-label="이름" autocomplete="off"><div class="nmbtns"><button class="close" id="nmOk" type="button">정하기</button><button class="close nmskip" id="nmSkip" type="button">기본 이름으로</button></div></div></div>
 <div class="overlay" id="genOv" hidden style="z-index:94"><div class="sheet giftsheet" role="dialog" aria-modal="true" aria-label="새 생성기"><h2>새 생성기가 생겼어요!</h2><div class="gfrow" id="genRowN"></div><p id="genNote"></p><button class="close" id="genOk" type="button">확인</button></div></div>
 <div class="overlay" id="sgOv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="특별 아가">
@@ -1651,7 +1651,7 @@ function claimMany(levels){
   levels.forEach(L=>{
     if(L>st.lv||st.claimed.includes(L))return;
     const r=rewardOf(L);st.claimed.push(L);st.coins+=r.coins;got++;
-    if(r.pet!=null&&!st.unlocked.includes(r.pet)&&vnState().seen[L]){st.unlocked.push(r.pet);st.petNameQ=(st.petNameQ||[]).concat(r.pet)}
+    if(r.pet!=null&&!st.unlocked.includes(r.pet)&&vnState().seen[L])st.unlocked.push(r.pet);
     if(r.box)cells=cells.concat(spawnBox());
   });
   if(!got)return;
@@ -2265,7 +2265,8 @@ function vnFill(t){return t.replace(/\{요일\}/g,DAYK[new Date().getDay()]+'요
 let vn=null,vnTimer=null;
 function vnLevels(){return Object.keys(VN_EP).map(Number).sort((a,b)=>a-b)}
 function vnOpen(L){
-  const ep=VN_EP[L];if(!ep)return;bgmSwitch(ep.bg);
+  const ep=VN_EP[L];if(!ep)return;
+  {const pp=rewardOf(L).pet;if(pp!=null&&!window.vnAll&&!vnState().seen[L]&&!(st.named&&st.named[pp])){nmAfter=()=>vnOpen(L);nmAsk(pp);return}}bgmSwitch(ep.bg);
   clearInterval(vnTimer);
   vn={L:L,ep:ep,i:0,phase:'lines',first:!window.vnAll&&!vnState().seen[L],typing:false,full:'',react:[],ri:0};
   const bg=$('#vnBg');bg.className='vn-bg '+ep.bg;bg.style.backgroundImage=VN_BG[ep.bg]?'url('+VN_BG[ep.bg]+')':'';
@@ -2328,7 +2329,7 @@ function vnEnd(){
   clearInterval(vnTimer);
   const first=vn&&vn.first,ttl=vn&&vn.ep.title,art=vn&&vn.ep.art,_L=vn&&vn.L;
   $('#vn').hidden=true;vn=null;bgmSwitch('main');
-  {const pp=first?rewardOf(_L).pet:null;if(pp!=null&&!st.unlocked.includes(pp)){st.unlocked.push(pp);st.petNameQ=(st.petNameQ||[]).concat(pp)}}
+  {const pp=first?rewardOf(_L).pet:null;if(pp!=null&&!st.unlocked.includes(pp))st.unlocked.push(pp)}
   save();renderTop();
   if(first){sfx('done');toast('「'+ttl+'」 완료!')}
   if(first&&art){
@@ -3708,7 +3709,7 @@ function nmAsk(p){
 function nmDone(save_){
   const p=nmP;if(p==null)return;
   if(save_){const v=$('#nmInp').value.trim().slice(0,8);st.petName=st.petName||{};if(!v||v===PET_NAME[p])delete st.petName[p];else st.petName[p]=v;toast('「'+petName(p)+'」(이)가 방송국에 왔어요')}
-  st.petNameQ=(st.petNameQ||[]).filter(x=>x!==p);save();renderOrders();if(!$('#dex').hidden)renderDex();nmClose();
+  st.named=st.named||{};st.named[p]=1;st.petNameQ=(st.petNameQ||[]).filter(x=>x!==p);save();renderOrders();if(!$('#dex').hidden)renderDex();nmClose();
   if(nmAfter){const f=nmAfter;nmAfter=null;f()}
 }
 $('#nmOk').addEventListener('click',()=>nmDone(true));
