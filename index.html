@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#C9B6FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="아델 머지"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><script>try{var _f=localStorage.getItem("adel-merge-font")||"noonnu";if(_f==="jua"||_f==="noonnu")document.documentElement.setAttribute("data-font",_f)}catch(e){document.documentElement.setAttribute("data-font","noonnu")}</script>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#C9B6FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="아델 머지"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><script>try{var _f=localStorage.getItem("adel-merge-font")||"noonnu";if(_f==="jua"||_f==="noonnu")document.documentElement.setAttribute("data-font",_f)}catch(e){document.documentElement.setAttribute("data-font","noonnu")}</script>
 </head><body>
 <title>아델 머지</title>
 
@@ -3660,4 +3660,23 @@ document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{co
 <style>.spkg6 .step{padding:3px 2px;gap:0}.spkg6 .spkic{max-width:30px}.spkg6 .step .qm{font-size:16px}.spkg6 .step.unk{min-height:0}@media (hover:hover) and (pointer:fine) and (min-width:760px){.spkg6 .spkic{max-width:30px}.spkg6 .step .qm{max-width:34px}.spkg6 .step b{font-size:10px}.spkp{font-size:11.5px;margin-bottom:5px}#spkdex{margin-top:8px}}</style>
 <style>.setrst{align-self:center;border:2px solid #f0b3c8;background:#fff;color:#d1486f;border-radius:999px;padding:6px 16px;font:inherit;font-size:13px;cursor:pointer}.setrst:active{background:#ffeaf1}@media (hover:hover) and (pointer:fine) and (min-width:760px){.setrst{font-size:14px;padding:5px 16px}}</style>
 <style>@media (hover:hover) and (pointer:fine) and (min-width:760px){.sndsheet{gap:4px}.sndsheet .sndrow{padding:5px 12px}.sndsheet .fontrow .fbtn{padding:3px 2px}}</style>
+<style>/* 모바일 확대/쏠림 방지: 두 번 탭·핀치 확대 막기, 입력창 자동 확대 막기 */
+html,body{touch-action:manipulation;overscroll-behavior:none}
+@media (pointer:coarse){input,textarea,select{font-size:16px!important}}
+</style>
+<script>
+(function(){
+  function reset(){try{if(scrollX!==0)scrollTo(0,scrollY)}catch(e){}}
+  addEventListener('scroll',reset,{passive:true});
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize',function(){
+      if(visualViewport.scale>1.01){
+        var m=document.querySelector('meta[name=viewport]');
+        if(m){var c=m.content;m.content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';setTimeout(function(){m.content=c},300)}
+      }
+      reset();
+    });
+  }
+})();
+</script>
 </body></html>
