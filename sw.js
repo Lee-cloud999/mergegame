@@ -1,4 +1,4 @@
-const V='adel-merge-v85';
+const V='adel-merge-v86';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 const AUDIO=['./audio/ending.mp3','./audio/bgm1.mp3','./audio/bgm2.mp3','./audio/bgm3.mp3','./audio/bgm4.mp3'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(async c=>{await c.addAll(FILES);AUDIO.forEach(u=>c.add(u).catch(()=>{}))}).then(()=>self.skipWaiting()))});

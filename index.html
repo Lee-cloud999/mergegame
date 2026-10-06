@@ -1713,12 +1713,9 @@ document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=
 
 /* daily quests: a 7-day cycle, then a new cycle with new quests */
 const STARSV='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5L12.4 7L18.3 7.5L13.8 11.4L15.2 17.2L10 14.1L4.8 17.2L6.2 11.4L1.7 7.5L7.6 7Z" fill="#F2B33D" stroke="#C98A16" stroke-width="1.2" stroke-linejoin="round"/></svg>';
-const QICON={
-  login:S('<rect x="10" y="14" width="44" height="40" rx="8" fill="#FFF7EA"/><rect x="10" y="14" width="44" height="13" rx="6" fill="#E25570"/><path d="M22 41l7 7 14-15" stroke="#45B58B" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'),
-  merge:S('<circle cx="23" cy="32" r="15" fill="#B79BF2"/><circle cx="41" cy="32" r="15" fill="#8D6BE0" opacity=".92"/><path d="M32 22v20M22 32h20" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>'),
-  merge3:ICON.A[3],gen:ICON.A[1],coin:COIN,hi:ICON.B[4],
-  deliver:'<img src="'+PET_IMG[2]+'" alt="" draggable="false">'
-};
+const QICON=(()=>{const im=(c,l)=>'<img src="'+ITEM_IMG[c][l]+'" alt="" draggable="false">';
+  return{login:im('E',5),merge:im('E',2),merge3:im('A',6),gen:im('B',1),coin:im('E',4),hi:im('B',6),
+    deliver:'<img src="'+PET_IMG[5]+'" alt="" draggable="false">'}})();
 const QTYPES=[
   {type:'deliver',base:6,step:1,label:n=>'아가 '+n+'명 만족시키기'},
   {type:'merge',base:18,step:1,label:n=>'합치기 '+n+'번 하기'},
