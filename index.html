@@ -1302,7 +1302,7 @@ function renderOrders(fresh){
   $('#orders').innerHTML=st.orders.map((o,k)=>
     '<div class="order '+(o.spk?'spkd ':'')+(o.state==='done'?'done ':'')+(findMatches(k).length?'ready ':'')+((k===fresh||fresh==='all'||(Array.isArray(fresh)&&fresh.includes(k)))?'enter':'')+'" data-k="'+k+'">'+
     '<img class="pet" src="'+PET_IMG[o.pet]+'" alt="'+petName(o.pet)+'" draggable="false">'+
-    '<div class="sign">'+(o.tier==='hard'?STAR:'')+'<div class="otxt">'+orderLabel(o)+'</div><div class="plate">'+
+    '<div class="sign">'+(o.tier==='hard'?STAR:'')+'<span class="pnm">'+escH(petName(o.pet))+'</span><div class="otxt">'+orderLabel(o)+'</div><div class="plate">'+
     o.needs.map(n=>'<span class="need'+(n.done?' done':'')+'" data-c="'+n.c+'" data-l="'+n.l+'" title="'+CHAINS[n.c].names[n.l]+'">'+ICON[n.c][n.l]+(n.done?CHECK:'')+'</span>').join('')+
     '</div><div class="rew">'+COIN+'<b>'+(o.spk?o.coins*2+(o.spkb||0):o.coins)+'</b>'+(o.state==='done'?'':'<button class="subbtn'+(findMatches(k).length?' ready':'')+'" type="button" data-k="'+k+'">제출</button>')+'</div></div></div>'
   ).join('');
@@ -3727,4 +3727,6 @@ setInterval(()=>{
   nmAsk(st.petNameQ[0]);
 },1200);
 </script>
-<style>#quest .qhead h2{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:default}</style></body></html>
+<style>#quest .qhead h2{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:default}</style><style>.pnm{display:none}
+.app.pcgrid .order .sign{position:relative}
+.app.pcgrid .order .pnm{display:block;position:absolute;left:8px;top:-8px;z-index:3;padding:1px 8px;border-radius:9px;background:#fff;border:2px solid #cdb8f3;color:#6B4FA0;font-family:var(--display);font-size:11px;line-height:1.3;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}</style></body></html>
