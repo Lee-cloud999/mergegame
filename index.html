@@ -1001,11 +1001,11 @@ const CHECK='<span class="ck"><svg viewBox="0 0 20 20" aria-hidden="true"><circl
 const PASS_LAST=14;
 function rewardOf(L){
   const r={coins:L*20};
-  const _pl={3:3,5:4,7:5,9:6,10:7};if(_pl[L]!=null)r.pet=_pl[L];
+  const _pl={2:2,4:0,6:1,8:4,10:7,12:6,14:3};if(_pl[L]!=null)r.pet=_pl[L];
   if(L<=PASS_LAST){if(L%2===0)r.box=true;if(L>=3&&L%2===1)r.energy=1}
   return r;
 }
-function unlockLv(p){return p<3?1:({3:3,4:5,5:7,6:9,7:10})[p]}
+function unlockLv(p){return ({5:1,2:2,0:4,1:6,4:8,7:10,6:12,3:14})[p]}
 function chips(L){
   const r=rewardOf(L);
   let h='<span class="rc">'+COIN+'<b>'+r.coins+'</b></span>';
@@ -1230,11 +1230,11 @@ function newOrder(k){
 const FX_SEED=[];
 function seed(){
   const cells=Array(N).fill(null);FX_SEED.forEach(a=>{cells[a[0]]={c:a[1],l:a[2],fx:1}});
-  return{cells,coins:30,xp:0,lv:1,e:40,eAt:Date.now(),fxSeeded:2,tut:true,tutStep:0,genPos:{B:0,E:1,A:2,C:3,F:4,D:5},claimed:[],unlocked:[0,1,2],fed:{},dec:{},zoneDone:[],bonusE:0,locks:[36,37,38,39,40,41],unlockN:0,orders:[mkOrder(2,[['B',2]],'easy'),mkOrder(0,[['B',1],['B',2]],'mid'),mkOrder(1,[['B',4]],'hard')]};
+  return{cells,coins:30,xp:0,lv:1,e:40,eAt:Date.now(),fxSeeded:2,tut:true,tutStep:0,genPos:{B:0,E:1,A:2,C:3,F:4,D:5},claimed:[],unlocked:[5],fed:{},dec:{},zoneDone:[],bonusE:0,locks:[36,37,38,39,40,41],unlockN:0,orders:[mkOrder(5,[['B',2]],'easy'),mkOrder(5,[['B',1],['B',2]],'mid'),mkOrder(5,[['B',4]],'hard')]};
 }
 function load(){
   try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.cells&&o.cells.length===N&&o.orders&&o.orders.length<=3){
-      if(!o.claimed){o.claimed=[];o.unlocked=[0,1,2];for(let L=2;L<=o.lv;L++){o.claimed.push(L);const r=rewardOf(L);if(r.pet!=null&&!o.unlocked.includes(r.pet))o.unlocked.push(r.pet)}}
+      if(!o.claimed){o.claimed=[];o.unlocked=[5];for(let L=2;L<=o.lv;L++){o.claimed.push(L);const r=rewardOf(L);if(r.pet!=null&&!o.unlocked.includes(r.pet))o.unlocked.push(r.pet)}}
       o.cells=o.cells.map(x=>x&&x.fx?null:x);o.fxSeeded=2;
       if(o.tutStep===undefined)o.tutStep=o.tut?0:3;if(!o.genPos)o.genPos={B:0,E:1,A:2,C:3,F:4,D:5};
       if(o.vn){if(!o.vn.v2){if(o.vn.seen&&o.vn.seen[10]){o.vn.seen[14]=o.vn.seen[10];delete o.vn.seen[10]}o.vn.v2=1}}
