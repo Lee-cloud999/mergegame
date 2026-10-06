@@ -3495,7 +3495,7 @@ function buildEndArt(){
   const order=[0,3,1,5,2,7,4,6];
   const L=[[1.5,2,0],[13.5,0,1],[6,15,2],[19,11,3]],R=[[83,2,4],[70.5,0,5],[77,15,6],[64,11,7]];
   L.concat(R).forEach((q,i)=>{h+='<img class="ea-kid" alt="" draggable="false" src="'+PET_IMG[q[2]]+'" style="left:'+q[0]+'%;bottom:'+q[1]+'%;animation-delay:-'+(i*.45).toFixed(2)+'s">'});
-  h+='<img class="ea-adel" alt="" draggable="false" src="'+(VN_SPR.C09||VN_SPR.B01)+'">';
+  h+='<img class="ea-adel" alt="" draggable="false" src="'+(VN_SPR.B03||VN_SPR.C09)+'">';
   h+='<div class="ea-vig"></div><div class="ea-ttl">오늘도 와줘서 고마워</div><div class="ea-sub">아델 방송국 · 다음 방송에서 만나요</div>';
   el.innerHTML=h;
 }
