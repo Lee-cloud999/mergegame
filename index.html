@@ -3544,7 +3544,7 @@ function playEndChat(){
       box.appendChild(d);while(box.scrollHeight>box.clientHeight+2&&box.children.length>1)box.removeChild(box.firstChild);
     };
     const last=i===END_CHAT.length-1;
-    if(calm){add();if(last&&nb)nb.disabled=false}else endChatT.push(setTimeout(()=>{add();if(last&&nb)setTimeout(()=>{nb.disabled=false},500)},900+i*1500+(r[2]==='adel'?900:0)));
+    if(calm){add();if(last&&nb)nb.disabled=false}else endChatT.push(setTimeout(()=>{add();if(last&&nb)setTimeout(()=>{nb.disabled=false},500)},900+i*1500+(i>=10?700:0)+(i>=11?1000:0)+(i>=12?1000:0)));
   });
 }
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#vnArtOv [data-close]'))endChatT.forEach(clearTimeout)});
