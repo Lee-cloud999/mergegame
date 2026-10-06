@@ -2330,7 +2330,10 @@ function vnEnd(){
   {const pp=first?rewardOf(_L).pet:null;if(pp!=null&&!st.unlocked.includes(pp)){st.unlocked.push(pp);st.petNameQ=(st.petNameQ||[]).concat(pp)}}
   save();renderTop();
   if(first){sfx('done');toast('「'+ttl+'」 완료!')}
-  if(first&&art)setTimeout(()=>endingSeq(),400);
+  if(first&&art){
+    if(st.petNameQ&&st.petNameQ.length){nmAfter=()=>setTimeout(()=>endingSeq(),400);setTimeout(()=>{if($('#nameOv').hidden)nmAsk(st.petNameQ[0])},500)}
+    else setTimeout(()=>endingSeq(),400);
+  }
 }
 function vnAdvance(){
   if(!vn)return;
@@ -3694,7 +3697,7 @@ html,body{touch-action:manipulation;overscroll-behavior:none}
 </style>
 <script>
 /* 새 아가: 스토리가 끝나 해금된 뒤 이름 짓기 창 */
-let nmP=null;
+let nmP=null,nmAfter=null;
 function nmClose(){$('#nameOv').hidden=true;nmP=null;scheduleTut()}
 function nmAsk(p){
   nmP=p;$('#nmImg').src=PET_IMG[p];$('#nmInp').value=petName(p);
@@ -3705,6 +3708,7 @@ function nmDone(save_){
   const p=nmP;if(p==null)return;
   if(save_){const v=$('#nmInp').value.trim().slice(0,8);st.petName=st.petName||{};if(!v||v===PET_NAME[p])delete st.petName[p];else st.petName[p]=v;toast('「'+petName(p)+'」(이)가 방송국에 왔어요')}
   st.petNameQ=(st.petNameQ||[]).filter(x=>x!==p);save();renderOrders();if(!$('#dex').hidden)renderDex();nmClose();
+  if(nmAfter){const f=nmAfter;nmAfter=null;f()}
 }
 $('#nmOk').addEventListener('click',()=>nmDone(true));
 $('#nmSkip').addEventListener('click',()=>nmDone(false));
