@@ -86,7 +86,8 @@ body {
 .cr-img { display: block; width: min(400px, 80vw); height: auto; margin: 0 auto; }
 .cr-big { font-family: var(--font-display); font-size: clamp(30px, 7vw, 56px); line-height: 1.25; margin: 0; color: #FFE27A; word-break: keep-all; text-wrap: balance; }
 .cr-close { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity 0.6s; z-index: 2; }
-.cr-x { position: fixed; top: 14px; right: 14px; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.08); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+.cr-x.holding { background: rgba(255,255,255,0.55) !important; transition: background 3s linear; }
+.cr-x { transition: background 0s; position: fixed; top: 14px; right: 14px; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.08); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
 .credits.done .cr-close { opacity: 1; pointer-events: auto; }
 .warn-screen .w-x { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.08); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
 .warn-screen .w-x:hover { background: rgba(255,255,255,0.22); }
@@ -498,7 +499,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   <p class="w-text">이 게임은 오이를 싫어하는 유전자가 섞인 사람들에게는 치명적인 공포감을 조성할 수 있습니다.</p>
   <p class="w-note">이 게임은 오이에 대한 취향을 소재로 만든 가벼운 팬게임입니다. 게임 속 ‘오이 공포 유전자’는 재미를 위한 가상의 설정으로, 실제 유전적 특성을 설명하거나 특정 유전적 특성·식성을 가진 사람을 비하하려는 의도는 없습니다.</p>
   <div class="w-bar"><div class="w-fill"></div></div>
-  <div class="w-skip">오른쪽 위 ✕ 버튼을 누르거나, 화면을 3초간 꾹 누르면 건너뛰어요</div>
+  <div class="w-skip">오른쪽 위 ✕ 버튼이나 화면을 3초간 꾹 누르면 건너뛰어요</div>
   <div class="w-hold"><div class="w-hold-fill"></div></div>
 </div>
 
@@ -1204,13 +1205,25 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     }
     creditsRaf = requestAnimationFrame(tick);
   }
-  document.getElementById('crX').addEventListener('click', function () {
+  var crXEl = document.getElementById('crX'), crHold = 0;
+  function crCancel() { clearTimeout(crHold); crHold = 0; crXEl.classList.remove('holding'); }
+  function crSkipNow() {
+    crCancel();
     if (!creditsSkip) return;
     sfx.click();
     cancelAnimationFrame(creditsRaf);
     creditsEl.hidden = true; creditsOn = false; creditsSkip = false;
     try { if (!titlesEl.hidden && ttItems[0]) ttItems[0].focus({ preventScroll: true }); } catch (e) {}
-  });
+  }
+  function crStartHold() {
+    if (!creditsSkip) return;
+    crCancel(); void crXEl.offsetWidth; crXEl.classList.add('holding');
+    crHold = setTimeout(crSkipNow, 3000);
+  }
+  crXEl.addEventListener('pointerdown', function (e) { e.preventDefault(); crStartHold(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { crXEl.addEventListener(ev, crCancel); });
+  crXEl.addEventListener('click', function (e) { e.preventDefault(); });
+  window.addEventListener('keyup', crCancel);
   document.getElementById('crClose').addEventListener('click', function () {
     if (!creditsEl.classList.contains('done')) return;
     sfx.click();
@@ -1382,15 +1395,14 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   var warnX = document.getElementById('warnX');
   var holdTimer = 0;
   function cancelHold() { clearTimeout(holdTimer); holdTimer = 0; warnEl.classList.remove('holding'); }
-  warnX.addEventListener('click', function (e) { e.stopPropagation(); skipWarn(); });
-  warnX.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+  warnX.addEventListener('click', function (e) { e.stopPropagation(); });
   warnEl.addEventListener('pointerdown', function (e) {
-    if (e.target === warnX) return;
     e.preventDefault();
     cancelHold();
     void warnEl.offsetWidth; warnEl.classList.add('holding');
     holdTimer = setTimeout(function () { cancelHold(); endWarn(); }, 3000);
   });
+  window.addEventListener('keyup', function () { if (warnLock) cancelHold(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { warnEl.addEventListener(ev, cancelHold); });
   function start() {
     if (warnLock) return;
@@ -1506,9 +1518,9 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
   window.addEventListener('keydown', function (e) {
     var k = e.key;
-    if (creditsOn) { var isX0 = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ'; if (creditsSkip && (k === 'Escape' || isX0)) { e.preventDefault(); if (!e.repeat) document.getElementById('crX').click(); return; } if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
+    if (creditsOn) { var isX0 = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ'; if (creditsSkip && (k === 'Escape' || isX0)) { e.preventDefault(); if (!e.repeat) crStartHold(); return; } if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
     var isX = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ';
-    if (warnLock) { if (isX || k === 'Escape') { e.preventDefault(); if (!e.repeat) skipWarn(); return; } if (document.activeElement === warnX && (k === 'Enter' || k === ' ')) return; e.preventDefault(); return; }
+    if (warnLock) { e.preventDefault(); if (!e.repeat && (isX || k === 'Escape' || (document.activeElement === warnX && (k === 'Enter' || k === ' ')))) { cancelHold(); void warnEl.offsetWidth; warnEl.classList.add('holding'); holdTimer = setTimeout(function () { cancelHold(); endWarn(); }, 3000); } return; }
     if (document.activeElement === missionInput) {
       if (k === 'Enter' && state === 'ready' && !introEl.hidden) { start(); e.preventDefault(); }
       else if ((k === 'ArrowDown' || k === 'ArrowUp' || k === 'Escape') && state === 'ready' && !introEl.hidden) { e.preventDefault(); try { startBtn.focus({ preventScroll: true }); } catch (err) {} }
