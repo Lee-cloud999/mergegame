@@ -873,7 +873,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     missionDone = false;
     t = 0; score = 0; hearts = 3; streak = 0; mult = 1; dodged = 0; ate = 0;
     items = []; parts = []; pops = []; feastT = 0; twins = []; reverseT = 0; ghost = null; ghostCd = 18; feastEaten = 0; packShow = 0; tierDone = {}; foodSet = {}; twinRun = 0; nearCount = 0; ghostDodged = 0; newSpecials = [];
-    spawnT = 0.6; waveT = 16; goldenCd = 8; heartCd = 14 + Math.random() * 6; shake = 0; inv = 0; flash = 0; toast = null;
+    spawnT = 0.6; waveT = 16; goldenCd = 8; heartCd = 26 + Math.random() * 10; shake = 0; inv = 0; flash = 0; toast = null;
     player = { x: W / 2, y: GROUND - 34, mood: 'idle', moodT: 0 };
     tx = W / 2;
     renderHUD();
@@ -931,8 +931,8 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       items.push({ k: 'gold', x: x, y: -30, vy: base * 0.8, r: 22, wob: 0 });
       return;
     }
-    if (heartCd <= 0 && hearts < 3 && feastT <= 0 && r < 0.08) {
-      heartCd = 16 + Math.random() * 12;
+    if (heartCd <= 0 && hearts < 3 && feastT <= 0 && r < 0.05) {
+      heartCd = 32 + Math.random() * 20;
       items.push({ k: 'heart', x: x, y: -30, vy: base * 0.75, r: 20, wob: 0 });
       return;
     }
