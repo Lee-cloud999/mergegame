@@ -69,6 +69,21 @@ body {
 .warn-screen .w-note { margin: 0; max-width: 34em; font-size: clamp(11px, 1.9vw, 14px); line-height: 1.6; color: rgba(255,255,255,0.62); word-break: keep-all; text-wrap: balance; }
 .warn-screen > * { flex-shrink: 0; }
 .warn-screen { overflow-y: auto; gap: 14px; }
+.credits { position: fixed; inset: 0; z-index: 210; background: #000; color: #fff; overflow: hidden; text-align: center; user-select: none; -webkit-user-select: none; }
+.credits[hidden] { display: none !important; }
+.cr-roll { position: absolute; left: 0; right: 0; top: 0; padding: 0 24px; will-change: transform; }
+.cr-roll > * { margin-left: auto !important; margin-right: auto !important; max-width: 30em; }
+.cr-title { font-family: var(--font-display); font-size: clamp(34px, 8vw, 64px); line-height: 1.15; margin: 0 0 12px; color: #fff; }
+.cr-sub { font-size: clamp(14px, 2.6vw, 18px); color: rgba(255,255,255,0.7); margin: 0 0 90px; line-height: 1.6; word-break: keep-all; }
+.cr-role { font-size: clamp(12px, 2.2vw, 15px); letter-spacing: 0.18em; color: #E5191F; margin: 0 0 8px; font-weight: 700; }
+.cr-name { font-family: var(--font-display); font-size: clamp(22px, 4.6vw, 36px); line-height: 1.3; margin: 0 0 6px; color: #fff; word-break: keep-all; }
+.cr-note { font-size: clamp(13px, 2.4vw, 17px); color: rgba(255,255,255,0.65); margin: 0 0 6px; line-height: 1.6; word-break: keep-all; }
+.cr-gap { height: 80px; }
+.cr-gap-lg { height: 150px; }
+.cr-small { font-size: clamp(12px, 2.2vw, 15px); color: rgba(255,255,255,0.5); margin: 0 0 8px; line-height: 1.6; word-break: keep-all; }
+.cr-big { font-family: var(--font-display); font-size: clamp(30px, 7vw, 56px); line-height: 1.25; margin: 0; color: #FFE27A; word-break: keep-all; text-wrap: balance; }
+.cr-close { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity 0.6s; z-index: 2; }
+.credits.done .cr-close { opacity: 1; pointer-events: auto; }
 .warn-screen .w-x { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.08); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
 .warn-screen .w-x:hover { background: rgba(255,255,255,0.22); }
 .warn-screen .w-hold { width: min(200px, 50vw); height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden; margin-top: -4px; opacity: 0; transition: opacity 0.15s; }
@@ -335,8 +350,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       </ul>
       <button class="btn" id="startBtn" type="button">시작하기</button>
       <div class="row2"><button class="btn btn-sub" id="titlesBtn" type="button">🏆 칭호 보기</button><button class="btn btn-sub" id="muteBtn" type="button" aria-pressed="false">소리 켜짐</button></div>
-      <p class="credit"><span>기획: 내일은쨍쨍</span><br><span>아이디어 제공: 익명의 팬 1인</span><br><span>이미지: ChatGPT</span></p>
-      <a href="../" style="position:absolute;top:8px;left:12px;z-index:5;font-size:12px;color:#1D2B45;background:rgba(255,255,255,.85);border:1.5px solid #1D2B45;border-radius:999px;padding:3px 10px;text-decoration:none">← 게임 모음</a>
+      <p class="credit"><span>기획: 내일은쨍쨍</span><br><span>아이디어 제공: 익명의 팬 1인</span><br><span>이미지: ChatGPT</span></p><a href="../" style="position:absolute;top:8px;left:12px;z-index:5;font-size:12px;color:#1D2B45;background:rgba(255,255,255,.85);border:1.5px solid #1D2B45;border-radius:999px;padding:3px 10px;text-decoration:none">← 게임 모음</a>
     </div>
 
     <div class="overlay" id="titles" hidden>
@@ -426,6 +440,55 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     <div class="title-toast" id="titleToast" role="status" aria-live="polite" hidden></div>
   </div>
 </main>
+
+<div class="credits" id="credits" hidden>
+  <div class="cr-roll" id="crRoll">
+    <h2 class="cr-title">아델와이스<br>오이 피하기</h2>
+    <p class="cr-sub">아델 방송국 팬게임<br>스머를 놀리기 위해 만들어졌습니다</p>
+    <div class="cr-role">출연</div>
+    <p class="cr-name">아델와이스</p>
+    <p class="cr-note">주연</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">오이귀신</p>
+    <p class="cr-note">특별 출연</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">오이들</p>
+    <p class="cr-note">점박이 · 줄무늬 · 오이 조각<br>한입 먹은 오이 · 웃는 오이 · 얄미운 오이</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">바지락 술찜</p>
+    <p class="cr-note">특별 출연</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">편의점 음식 8종 · 하트 1개</p>
+    <p class="cr-note">우정 출연</p>
+    <div class="cr-gap-lg"></div>
+    <div class="cr-role">기획</div>
+    <p class="cr-name">내일은쨍쨍</p>
+    <div class="cr-gap"></div>
+    <div class="cr-role">아이디어 제공</div>
+    <p class="cr-name">익명의 팬 1인</p>
+    <div class="cr-gap"></div>
+    <div class="cr-role">이미지</div>
+    <p class="cr-name">ChatGPT</p>
+    <div class="cr-gap-lg"></div>
+    <p class="cr-name">끝까지 플레이해 주셔서 감사합니다</p>
+    <p class="cr-note">오이는 아직 안 끝났습니다</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">스머의 오이 극복기,<br>계속됩니다…</p>
+    <div class="cr-gap"></div>
+    <p class="cr-name">아델와이스, 오늘도<br>무사히 살아남았습니다</p>
+    <div class="cr-gap-lg"></div>
+    <p class="cr-small">이 이야기는 픽션이며, 등장하는 오이는 실제 오이와 무관합니다</p>
+    <p class="cr-small">촬영 중 오이는 한 개도 다치지 않았습니다</p>
+    <p class="cr-small">오이 출연료는 지급되지 않았습니다</p>
+    <div class="cr-gap-lg"></div>
+    <p class="cr-name">오이귀신은 오늘도 손절당했습니다</p>
+    <div class="cr-gap-lg"></div>
+    <p class="cr-big">사실 오이는 맛있습니다</p>
+    <div class="cr-gap-lg"></div>
+    <p class="cr-big" id="crEnd">THE END…<br>OR IS IT? 🥒</p>
+  </div>
+  <button class="btn cr-close" id="crClose" type="button">닫기</button>
+</div>
 
 <div class="warn-screen" id="warnScreen" role="alert" hidden>
   <button class="w-x" id="warnX" type="button" aria-label="건너뛰기">✕</button>
@@ -1108,12 +1171,47 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       if (titleBusy || titleQueue.length) { setTimeout(wait, 400); return; }
       grandPending = false;
       try { localStorage.setItem('oi-grand', '1'); } catch (e) {}
+      creditsAfterGrand = true;
       showGrand();
     })();
   }
+  var creditsEl = document.getElementById('credits'), creditsOn = false, creditsRaf = 0, creditsAfterGrand = false;
+  function startCredits() {
+    var roll = document.getElementById('crRoll'), endEl = document.getElementById('crEnd');
+    creditsOn = true;
+    creditsEl.classList.remove('done');
+    creditsEl.hidden = false;
+    var vh = window.innerHeight;
+    var y = vh;
+    roll.style.transform = 'translateY(' + y + 'px)';
+    var endY = vh / 2 - (endEl.offsetTop + endEl.offsetHeight / 2);
+    var speed = 56, last = performance.now();
+    cancelAnimationFrame(creditsRaf);
+    function tick(now) {
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      y -= speed * dt;
+      if (y <= endY) {
+        y = endY;
+        roll.style.transform = 'translateY(' + y + 'px)';
+        creditsEl.classList.add('done');
+        try { document.getElementById('crClose').focus({ preventScroll: true }); } catch (e) {}
+        return;
+      }
+      roll.style.transform = 'translateY(' + y + 'px)';
+      creditsRaf = requestAnimationFrame(tick);
+    }
+    creditsRaf = requestAnimationFrame(tick);
+  }
+  document.getElementById('crClose').addEventListener('click', function () {
+    if (!creditsEl.classList.contains('done')) return;
+    sfx.click();
+    cancelAnimationFrame(creditsRaf);
+    creditsEl.hidden = true; creditsOn = false;
+  });
   document.getElementById('grandClose').addEventListener('click', function () {
     sfx.click();
     grandEl.hidden = true;
+    if (creditsAfterGrand) { creditsAfterGrand = false; startCredits(); }
   });
 
   var ttItems = [], tviewEl = document.getElementById('tview'), tvLast = null;
@@ -1399,6 +1497,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
   window.addEventListener('keydown', function (e) {
     var k = e.key;
+    if (creditsOn) { if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
     if (warnLock) { if (document.activeElement === warnX && (k === 'Enter' || k === ' ')) return; e.preventDefault(); return; }
     if (document.activeElement === missionInput) {
       if (k === 'Enter' && state === 'ready' && !introEl.hidden) { start(); e.preventDefault(); }
