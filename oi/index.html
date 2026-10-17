@@ -180,6 +180,7 @@ canvas { display: block; touch-action: none; }
 @media (prefers-reduced-motion: reduce) { #titlesBtn { animation: none; } }
 .btn-sub { font-size: 17px; padding: 10px 20px; background: #fff; color: var(--cuke-deep); box-shadow: 0 4px 0 var(--cuke-deep); }
 .tt-note { font-size: 14px; }
+.pc-hint.need-click { color: var(--coral-deep) !important; }
 .pause-hint { display: none; word-break: keep-all; font-size: 12px; color: var(--cuke-deep); }
 @media (hover: hover) and (pointer: fine) { .pause-hint { display: block; } }
 .tt-list li[role="button"], .tt-dishes li[role="button"] { cursor: pointer; }
@@ -1276,7 +1277,7 @@ canvas { display: block; touch-action: none; }
       else if (k === 'ArrowDown' || k === 's' || k === 'S') moved = cur < 0 ? 0 : (cur < 2 ? cur + 2 : cur);
       if (moved >= 0) {
         e.preventDefault();
-        if (!dishBtns[moved].disabled) { try { dishBtns[moved].focus({ preventScroll: true }); } catch (err) {} sfx.click(); }
+        if (!dishBtns[moved].disabled) { try { dishBtns[moved].focus({ preventScroll: true }); dishBtns[moved].scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (err) {} sfx.click(); }
         return;
       }
       if (k === 'Enter' && !e.repeat) {
@@ -1292,7 +1293,7 @@ canvas { display: block; touch-action: none; }
       if (!vis.length) return;
       var i = vis.indexOf(ae);
       i = i < 0 ? (dir > 0 ? 0 : vis.length - 1) : (i + dir + vis.length) % vis.length;
-      try { vis[i].focus({ preventScroll: true }); } catch (err) {}
+      try { vis[i].focus({ preventScroll: true }); vis[i].scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (err) {}
       sfx.click();
     }
     var fwd = (k === 'ArrowRight' || k === 'ArrowDown' || k === 'd' || k === 'D' || k === 's' || k === 'S');
@@ -1850,7 +1851,20 @@ canvas { display: block; touch-action: none; }
     setTimeout(finish, 12000);
   })();
 
-  document.addEventListener('pointerdown', function () { try { window.focus(); } catch (e) {} }, true);
+  document.addEventListener('pointerdown', function () { try { window.focus(); } catch (e) {} setTimeout(syncKbHint, 50); }, true);
+  // 다른 페이지 안에 들어 있을 때는 화면을 한 번 눌러야 키보드가 들어오므로 안내 문구를 바꿔 보여줌
+  var pcHintEl = document.querySelector('.pc-hint');
+  function syncKbHint() {
+    if (!pcHintEl) return;
+    var has = true;
+    try { has = document.hasFocus(); } catch (e) {}
+    pcHintEl.textContent = has ? 'PC : 화살표 좌우키' : 'PC : 한 번 클릭하면 키보드 사용 가능';
+    pcHintEl.classList.toggle('need-click', !has);
+  }
+  window.addEventListener('focus', syncKbHint);
+  window.addEventListener('blur', syncKbHint);
+  setInterval(syncKbHint, 500);
+  syncKbHint();
   var last = performance.now();
   function loop(now) {
     var dt = Math.min(0.05, (now - last) / 1000);
