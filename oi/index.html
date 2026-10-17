@@ -352,7 +352,6 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       </ul>
       <button class="btn" id="startBtn" type="button">시작하기</button>
       <div class="row2"><button class="btn btn-sub" id="titlesBtn" type="button">🏆 칭호 보기</button><button class="btn btn-sub" id="muteBtn" type="button" aria-pressed="false">소리 켜짐</button></div>
-      <button class="btn btn-sub" id="adminCrBtn" type="button" hidden>🎬 엔딩 크레딧 보기 (관리자)</button>
       <p class="credit"><span>기획: 내일은쨍쨍</span><br><span>아이디어 제공: 익명의 팬 1인</span><br><span>이미지: ChatGPT</span></p><a href="../" style="position:absolute;top:8px;left:12px;z-index:5;font-size:12px;color:#1D2B45;background:rgba(255,255,255,.85);border:1.5px solid #1D2B45;border-radius:999px;padding:3px 10px;text-decoration:none">← 게임 모음</a>
     </div>
 
@@ -1178,15 +1177,6 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     })();
   }
   var creditsEl = document.getElementById('credits'), creditsOn = false, creditsRaf = 0, creditsAfterGrand = false;
-  (function () {
-    var h = document.querySelector('#intro h1'), n = 0, t = 0, ab = document.getElementById('adminCrBtn');
-    h.addEventListener('click', function () {
-      var now = Date.now();
-      n = (now - t < 1500) ? n + 1 : 1; t = now;
-      if (n >= 5) { n = 0; ab.hidden = !ab.hidden; }
-    });
-    ab.addEventListener('click', function () { startCredits(); });
-  })();
   function startCredits() {
     var roll = document.getElementById('crRoll'), endEl = document.getElementById('crEnd');
     creditsOn = true;
@@ -2182,6 +2172,12 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+  // 관리자 페이지(admin.html)에서 넘어온 명령
+  try {
+    var adminCmd = new URLSearchParams(location.search).get('admin');
+    if (adminCmd === 'credits') startCredits();
+    else if (adminCmd === 'grand') { creditsAfterGrand = true; showGrand(); }
+  } catch (e) {}
 })();
 </script>
 

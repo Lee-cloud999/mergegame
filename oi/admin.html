@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>오이 피하기 관리자</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#14301f;color:#f3fff0;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.5}
+main{max-width:640px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#a9c9b0;font-size:14px;margin:0 0 18px}
+section{background:#1d4a2c;border-radius:14px;padding:14px 16px;margin:0 0 14px}
+h2{font-size:16px;margin:0 0 10px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+button,a.btn{font:inherit;font-size:15px;font-weight:700;color:#fff;background:#2e8b57;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
+button.warn{background:#c0392b}
+button:focus-visible,a.btn:focus-visible,input:focus-visible{outline:3px solid #ffe27a;outline-offset:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:4px 0;border-bottom:1px solid #2c6a40}
+td:last-child{text-align:right}
+.ok{color:#7dff9b}.no{color:#ff9b8f}
+input[type=number]{font:inherit;width:120px;padding:8px;border-radius:8px;border:0}
+.msg{min-height:22px;color:#ffe27a;font-size:14px;margin-top:8px}
+small{color:#a9c9b0}
+</style></head><body><main>
+<h1>🥒 오이 피하기 관리자</h1>
+<p class="sub">이 브라우저에 저장된 게임 기록을 보고 바꿀 수 있어요. (게임과 같은 주소 안에서만 동작해요)</p>
+
+<section><h2>🎬 연출 미리보기</h2>
+<div class="row">
+<a class="btn" href="./?admin=credits">엔딩 크레딧 보기</a>
+<a class="btn" href="./?admin=grand">지배자 화면 + 크레딧 보기</a>
+<a class="btn" href="./">게임으로 가기</a>
+</div><small>크레딧은 스킵이 안 돼요. 끝나고 닫기를 누르면 게임 화면으로 돌아와요.</small></section>
+
+<section><h2>🏆 칭호 현황</h2><table id="tbl"></table><div class="msg" id="sum"></div></section>
+
+<section><h2>🛠 기록 바꾸기</h2>
+<div class="row">
+<button id="unlockAll">칭호 전부 해금 (지배자 제외)</button>
+<button id="resetGrand">지배자 등장 기록 초기화</button>
+<button class="warn" id="resetTitles">칭호·바지락 횟수 초기화</button>
+<button class="warn" id="resetAll">모든 기록 초기화</button>
+</div>
+<p><small>"칭호 전부 해금" 뒤에 게임에서 한 판만 하면 지배자 칭호 → 크레딧이 실제 흐름으로 나와요 (지배자 등장 기록을 먼저 초기화해 두세요).</small></p>
+<div class="row"><label>최고 점수 <input type="number" id="bestIn" min="0" step="100"></label><button id="bestSet">저장</button></div>
+<div class="row" style="margin-top:8px"><label>미션 목표 <input type="number" id="missIn" min="10" step="10"></label><button id="missSet">저장</button></div>
+<div class="msg" id="msg"></div></section>
+</main>
+<script>
+(function(){
+  var SPECIALS=['오이껍질팩 장인','편의점 죽돌이','원플원에 진심인 편','오이랑 썸 타는 중','오이귀신 손절','오이 알레르기 아님','바지락에 영혼을 팔았다','오이 요리 연구소장'];
+  var DISHES=['소박이 입덕자','오이 빼달라던 자','냉국 한 사발 뚝딱','무침에 눈 뜬 자'];
+  var TIERS=[[3000,'오이 허접'],[8000,'오이 극혐러'],[15000,'오이 학살자'],[20000,'오이계 빌런']];
+  var KEYS=['smur-cucumber-best','oi-special-titles','oi-dish-titles','oi-clam-count','oi-grand','oi-mission2'];
+  function g(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,v)}catch(e){say('저장 실패 (브라우저 설정 확인)')}}
+  function del(k){try{localStorage.removeItem(k)}catch(e){}}
+  function arr(k){try{return JSON.parse(g(k)||'[]')}catch(e){return[]}}
+  function say(t){document.getElementById('msg').textContent=t}
+  function render(){
+    var best=parseInt(g('smur-cucumber-best'),10)||0, sp=arr('oi-special-titles'), ds=arr('oi-dish-titles'), rows=[], n=0, tot=TIERS.length+DISHES.length+SPECIALS.length;
+    function r(name,ok){if(ok)n++;rows.push('<tr><td>'+name+'</td><td class="'+(ok?'ok':'no')+'">'+(ok?'획득':'미획득')+'</td></tr>')}
+    rows.push('<tr><td>최고 점수</td><td>'+best+'</td></tr>');
+    TIERS.forEach(function(t){r('점수: '+t[1]+' ('+t[0]+'점)',best>=t[0])});
+    DISHES.forEach(function(d){r('요리: '+d,ds.indexOf(d)>=0)});
+    SPECIALS.forEach(function(d){r('특별: '+d,sp.indexOf(d)>=0)});
+    rows.push('<tr><td>바지락 엔딩 횟수</td><td>'+(parseInt(g('oi-clam-count'),10)||0)+'</td></tr>');
+    rows.push('<tr><td>오이 세계관의 지배자</td><td class="'+(g('oi-grand')?'ok':'no')+'">'+(g('oi-grand')?'이미 등장함':'아직')+'</td></tr>');
+    rows.push('<tr><td>미션 목표</td><td>'+(g('oi-mission2')||'10000 (기본)')+'</td></tr>');
+    document.getElementById('tbl').innerHTML=rows.join('');
+    document.getElementById('sum').textContent='칭호 '+n+' / '+tot+'개 (지배자 제외)';
+    document.getElementById('bestIn').value=best;
+    document.getElementById('missIn').value=parseInt(g('oi-mission2'),10)||10000;
+  }
+  function ask(t){return confirm(t)}
+  document.getElementById('unlockAll').onclick=function(){
+    set('smur-cucumber-best',String(Math.max(20000,parseInt(g('smur-cucumber-best'),10)||0)));
+    set('oi-special-titles',JSON.stringify(SPECIALS));set('oi-dish-titles',JSON.stringify(DISHES));
+    set('oi-clam-count','3');say('칭호를 전부 해금했어요.');render()};
+  document.getElementById('resetGrand').onclick=function(){del('oi-grand');say('지배자 등장 기록을 초기화했어요.');render()};
+  document.getElementById('resetTitles').onclick=function(){if(!ask('칭호와 바지락 횟수를 초기화할까요?'))return;
+    ['oi-special-titles','oi-dish-titles','oi-clam-count','oi-grand'].forEach(del);say('칭호를 초기화했어요.');render()};
+  document.getElementById('resetAll').onclick=function(){if(!ask('최고 점수까지 모든 기록을 초기화할까요?'))return;
+    KEYS.forEach(del);say('모든 기록을 초기화했어요.');render()};
+  document.getElementById('bestSet').onclick=function(){var v=parseInt(document.getElementById('bestIn').value,10);
+    if(!(v>=0)){say('숫자를 확인해 주세요.');return}set('smur-cucumber-best',String(v));say('최고 점수를 저장했어요.');render()};
+  document.getElementById('missSet').onclick=function(){var v=parseInt(document.getElementById('missIn').value,10);
+    if(!(v>=10)){say('10 이상으로 입력해 주세요.');return}set('oi-mission2',String(v));say('미션 목표를 저장했어요.');render()};
+  render();
+})();
+</script></body></html>
