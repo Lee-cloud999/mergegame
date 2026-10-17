@@ -429,8 +429,8 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
     <div class="overlay" id="review" hidden style="z-index:23">
       <h2>💌 후기 남기기</h2>
-      <textarea id="rvText" maxlength="300" rows="9" placeholder="게임 후기를 자유롭게 적어 주세요 (최대 300자)" aria-label="후기"></textarea>
-      <div class="rv-count" id="rvCount">0 / 300</div>
+      <textarea id="rvText" maxlength="1000" rows="9" placeholder="게임 후기를 자유롭게 적어 주세요 (최대 1000자)" aria-label="후기"></textarea>
+      <div class="rv-count" id="rvCount">0 / 1000</div>
       <p class="rv-note">※ 후기는 입력한 사람의 이 브라우저에만 저장돼요.<br>다른 사람이나 제작자에게는 전달되지 않아요.</p>
       <div class="row2"><button class="btn btn-main" id="rvSave" type="button">저장</button><button class="btn btn-sub btn-main" id="rvClose" type="button">닫기</button></div>
       <div class="rv-msg" id="rvMsg" role="status"></div>
@@ -1260,7 +1260,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       sm.textContent = r.t; li.appendChild(sm); li.appendChild(document.createTextNode(r.s)); ul.appendChild(li);
     });
   }
-  function rvCount() { document.getElementById('rvCount').textContent = rvText.value.length + ' / 300'; }
+  function rvCount() { document.getElementById('rvCount').textContent = rvText.value.length + ' / 1000'; }
   function rvOpen() { introEl.hidden = true; reviewEl.hidden = false; document.getElementById('rvMsg').textContent = ''; rvRender(); rvCount(); try { rvText.focus({ preventScroll: true }); } catch (e) {} }
   function rvHide() { reviewEl.hidden = true; introEl.hidden = false; try { reviewBtn.focus({ preventScroll: true }); } catch (e) {} }
   reviewBtn.addEventListener('click', function () { sfx.click(); rvOpen(); });
