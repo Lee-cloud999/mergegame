@@ -828,7 +828,7 @@ canvas { display: block; touch-action: none; }
 
   function eat(it) {
     sfx.eat();
-    if (it.e != null) { foodSet[it.e] = true; if (Object.keys(foodSet).length >= 8) earnSpecial('편의점 VIP'); }
+    if (it.e != null) { foodSet[it.e] = true; if (Object.keys(foodSet).length >= 8) earnSpecial('편의점 죽돌이'); }
     if (it.twin) { twinRun++; if (twinRun >= 3) earnSpecial('원플원에 진심인 편'); }
     var prevMult = mult;
     streak++;
@@ -852,7 +852,7 @@ canvas { display: block; touch-action: none; }
   var packShow = 0;
   var SPECIALS = [
     { name: '오이껍질팩 장인', img: 'faces/pack.png', hint: '한 판에 오이 먹기 타임으로 오이 ' + PACK_GOAL + '개 먹기' },
-    { name: '편의점 VIP', img: 'faces/vip.png', hint: '한 판에 음식 8종 모두 먹기' },
+    { name: '편의점 죽돌이', img: 'faces/vip.png', hint: '한 판에 음식 8종 모두 먹기' },
     { name: '원플원에 진심인 편', img: 'faces/oneplus.png', hint: '한 판에 1+1 음식 3개 먹기' },
     { name: '오이랑 썸 타는 중', img: 'faces/some.png', hint: '한 판에 아슬아슬 보너스 10번' },
     { name: '오이귀신 손절', img: 'faces/cut.png', hint: '한 판에 귀신이 던진 오이 6개 피하기' },
