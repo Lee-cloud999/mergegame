@@ -81,6 +81,12 @@ body {
 .cr-gap { height: 80px; }
 .cr-gap-lg { height: 150px; }
 .cr-gap-cast { height: 130px; }
+.btn.btn-bonus { font-size: 16px !important; padding: 7px 22px !important; color: #fff !important; background: linear-gradient(180deg, #B58CFF, #7A4DE0) !important; box-shadow: 0 4px 0 #4B2BA0 !important; margin-top: -2px; }
+#bonus { background: radial-gradient(circle at 50% 30%, #F3EBFF, #DCCBFF 60%, #BFA4FF); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.bn-stage { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 220px; }
+.bn-stage img { display: block; max-width: 92%; max-height: 52vh; width: auto; height: auto; border-radius: 14px; filter: drop-shadow(0 6px 0 rgba(29,43,69,0.16)); -webkit-user-drag: none; }
+#bnEmpty { font-family: var(--font-display); font-size: 22px; color: #4B2BA0; }
+.bn-count { font-family: var(--font-display); font-size: 16px; color: #4B2BA0; min-height: 20px; }
 .cr-gap-end { height: 340px; }
 .cr-big.cr-red { color: #E5191F; }
 .cr-small { font-size: clamp(12px, 2.2vw, 15px); color: rgba(255,255,255,0.5); margin: 0 0 8px; line-height: 1.6; word-break: keep-all; }
@@ -357,6 +363,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       </ul>
       <button class="btn" id="startBtn" type="button">시작하기</button>
       <div class="row2"><button class="btn btn-sub" id="titlesBtn" type="button">🏆 칭호 보기</button><button class="btn btn-sub" id="muteBtn" type="button" aria-pressed="false">소리 켜짐</button></div>
+      <button class="btn btn-bonus" id="bonusBtn" type="button" hidden>🎁 BONUS</button>
       <p class="credit"><span>기획: 내일은쨍쨍</span><br><span>아이디어 제공: 익명의 팬 1인</span><br><span>이미지: ChatGPT</span></p><a href="../" style="position:absolute;top:8px;left:12px;z-index:5;font-size:12px;color:#1D2B45;background:rgba(255,255,255,.85);border:1.5px solid #1D2B45;border-radius:999px;padding:3px 10px;text-decoration:none">← 게임 모음</a>
     </div>
 
@@ -378,6 +385,14 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       <p>잠깐 쉬어가요!</p>
       <div class="row2"><button class="btn btn-main" id="resumeBtn" type="button">계속하기</button><button class="btn btn-sub btn-main" id="quitBtn" type="button">그만두기</button></div>
       <p class="pause-hint">PC : Esc = 계속하기 · 방향키 + Enter = 선택</p>
+    </div>
+
+    <div class="overlay" id="bonus" hidden style="z-index:23">
+      <h2>🎁 BONUS</h2>
+      <div class="bn-stage"><img id="bnImg" alt="" hidden><p id="bnEmpty">곧 공개돼요!</p></div>
+      <div class="bn-count" id="bnCount"></div>
+      <div class="row2"><button class="btn btn-sub" id="bnPrev" type="button">◀ 이전</button><button class="btn btn-sub" id="bnNext" type="button">다음 ▶</button></div>
+      <button class="btn btn-main" id="bnClose" type="button">닫기</button>
     </div>
 
     <div class="overlay" id="tview" hidden>
@@ -1153,7 +1168,27 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     for (var j = 0; j < SPECIALS.length; j++) if (sg.indexOf(SPECIALS[j].name) < 0) return false;
     return true;
   }
+  // BONUS: 최종 칭호를 본 뒤 메인 화면에 생기는 버튼. 사진은 아래 BONUS_IMGS 목록에 파일 이름만 넣으면 돼요.
+  var BONUS_IMGS = [];
+  var bonusBtn = document.getElementById('bonusBtn'), bonusEl = document.getElementById('bonus'), bnIdx = 0;
+  function bonusOpen() { try { return localStorage.getItem('oi-bonus') === '1'; } catch (e) { return false; } }
+  function updateBonusBtn() { bonusBtn.hidden = !bonusOpen(); }
+  function unlockBonus() { try { localStorage.setItem('oi-bonus', '1'); } catch (e) {} updateBonusBtn(); }
+  function bnRender() {
+    var img = document.getElementById('bnImg'), empty = document.getElementById('bnEmpty'), n = BONUS_IMGS.length;
+    if (!n) { img.hidden = true; empty.hidden = false; document.getElementById('bnCount').textContent = ''; }
+    else { bnIdx = (bnIdx + n) % n; img.src = BONUS_IMGS[bnIdx]; img.hidden = false; empty.hidden = true; document.getElementById('bnCount').textContent = (bnIdx + 1) + ' / ' + n; }
+    document.getElementById('bnPrev').hidden = document.getElementById('bnNext').hidden = n < 2;
+  }
+  function bonusShow() { bnIdx = 0; bnRender(); introEl.hidden = true; bonusEl.hidden = false; try { document.getElementById('bnClose').focus({ preventScroll: true }); } catch (e) {} }
+  function bonusHide() { bonusEl.hidden = true; introEl.hidden = false; try { bonusBtn.focus({ preventScroll: true }); } catch (e) {} }
+  bonusBtn.addEventListener('click', function () { sfx.click(); bonusShow(); });
+  document.getElementById('bnClose').addEventListener('click', function () { sfx.click(); bonusHide(); });
+  document.getElementById('bnPrev').addEventListener('click', function () { sfx.click(); bnIdx--; bnRender(); });
+  document.getElementById('bnNext').addEventListener('click', function () { sfx.click(); bnIdx++; bnRender(); });
+  updateBonusBtn();
   function showGrand() {
+    unlockBonus();
     grandEl.classList.remove('go');
     grandEl.hidden = false;
     void grandEl.offsetWidth;
@@ -1247,7 +1282,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   }
   function activateItem(li) {
     if (!li._ok) return;
-    if (li._info.grand) { sfx.click(); startCredits(true); return; }
+    if (li._info.grand) { sfx.click(); unlockBonus(); startCredits(true); return; }
     openTview(li._info, li);
   }
   function openTview(info, from) {
@@ -1521,6 +1556,12 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
   window.addEventListener('keydown', function (e) {
     var k = e.key;
+    if (!bonusEl.hidden) {
+      if (k === 'Escape') { e.preventDefault(); bonusHide(); return; }
+      if (k === 'ArrowLeft' && BONUS_IMGS.length > 1) { e.preventDefault(); bnIdx--; bnRender(); return; }
+      if (k === 'ArrowRight' && BONUS_IMGS.length > 1) { e.preventDefault(); bnIdx++; bnRender(); return; }
+      return;
+    }
     if (creditsOn) { var isX0 = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ'; if (creditsSkip && (k === 'Escape' || isX0)) { e.preventDefault(); if (!e.repeat) crStartHold(); return; } if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
     var isX = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ';
     if (warnLock) { e.preventDefault(); if (!e.repeat && (isX || k === 'Escape' || (document.activeElement === warnX && (k === 'Enter' || k === ' ')))) { cancelHold(); void warnEl.offsetWidth; warnEl.classList.add('holding'); holdTimer = setTimeout(function () { cancelHold(); endWarn(); }, 3000); } return; }
@@ -2201,6 +2242,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     var adminCmd = new URLSearchParams(location.search).get('admin');
     if (adminCmd === 'credits') startCredits();
     else if (adminCmd === 'grand') { creditsAfterGrand = true; showGrand(); }
+    else if (adminCmd === 'bonus') { introEl.hidden = false; bonusShow(); }
   } catch (e) {}
 })();
 </script>
