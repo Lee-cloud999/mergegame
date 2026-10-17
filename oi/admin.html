@@ -26,6 +26,10 @@ small{color:#a9c9b0}
 <h1>🥒 오이 피하기 관리자</h1>
 <p class="sub">이 브라우저에 저장된 게임 기록을 보고 바꿀 수 있어요. (게임과 같은 주소 안에서만 동작해요)</p>
 
+<section><h2>🧾 게임 버전</h2>
+<table><tr><td>이 브라우저가 불러오는 게임</td><td id="verBuild">확인 중…</td></tr></table>
+<small>게임 화면에는 "최신 버전 v1.0"만 보이고, 빌드 날짜·시각은 여기서만 볼 수 있어요. 최신 시각과 다르면 Ctrl+Shift+R을 눌러 주세요.</small></section>
+
 <section><h2>🎬 연출 미리보기</h2>
 <div class="row">
 <a class="btn" href="./?admin=credits">엔딩 크레딧 보기</a>
@@ -94,5 +98,9 @@ small{color:#a9c9b0}
   document.getElementById('missSet').onclick=function(){var v=parseInt(document.getElementById('missIn').value,10);
     if(!(v>=10)){say('10 이상으로 입력해 주세요.');return}set('oi-mission3',String(v));say('미션 목표를 저장했어요.');render()};
   render();
+  fetch('./',{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    var m=t.match(/<meta name="oi-build" content="([^"]+)">/);
+    document.getElementById('verBuild').textContent=m?('v1.0 · '+m[1]):'확인 불가(구버전일 수 있어요)';
+  }).catch(function(){document.getElementById('verBuild').textContent='확인 실패';});
 })();
 </script></body></html>
