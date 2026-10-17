@@ -1656,7 +1656,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       return;
     }
     if (state === 'ready' && !introEl.hidden) {
-      if (fwd || back) { e.preventDefault(); stepFocus([startBtn, document.getElementById('titlesBtn'), muteBtn], fwd ? 1 : -1); return; }
+      if (fwd || back) { e.preventDefault(); stepFocus([startBtn, document.getElementById('titlesBtn'), muteBtn].concat(bonusBtn.hidden ? [] : [bonusBtn]), fwd ? 1 : -1); return; }
       if ((k === 'Enter' || k === ' ') && !(ae && ae.tagName === 'BUTTON')) { start(); e.preventDefault(); }
       return;
     }
