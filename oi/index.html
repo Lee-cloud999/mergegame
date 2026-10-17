@@ -129,7 +129,7 @@ canvas { display: block; touch-action: none; }
 #pickSub { white-space: pre-line; word-break: keep-all; }
 .mission-ask { margin: 2px 0 -4px; font-family: var(--font-display); font-size: 18px; color: #D8222A; }
 .mission-intro input { width: 84px; font: inherit; font-size: 20px; text-align: center; color: var(--ink); background: #fff; border: 0; border-radius: 10px; padding: 2px 4px; margin: 0 4px; }
-.mission-intro input:focus-visible { outline: 3px solid var(--ink); outline-offset: 1px; }
+.mission-intro input:focus-visible { outline: 3px solid #1B6B2F; outline-offset: 1px; }
 .mission-badge { font-family: var(--font-display); font-size: 16px; border-radius: 999px; padding: 5px 14px; color: #fff; }
 .mission-badge.ok { background: var(--cuke); }
 .mission-badge.no { background: #7A869C; }
@@ -148,8 +148,8 @@ canvas { display: block; touch-action: none; }
 .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--coral-deep); }
 .pick-hint { display: none; margin: 0; font-size: 13px; color: var(--cuke-deep); }
 @media (hover: hover) and (pointer: fine) { .pick-hint:not([hidden]) { display: block; } }
-.btn.dish:focus-visible { outline: 4px solid var(--coral-deep); outline-offset: 3px; transform: translateY(-2px) scale(1.04); }
-.btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.btn.dish:focus-visible { outline: 4px solid #1B6B2F; outline-offset: 3px; transform: translateY(-2px) scale(1.04); }
+.btn:focus-visible { outline: 3px solid #1B6B2F; outline-offset: 3px; }
 .btn:disabled { opacity: 0.55; cursor: default; }
 .line { font-size: 15px; }
 .stats { display: flex; gap: 22px; margin: 2px 0; }
@@ -198,7 +198,7 @@ canvas { display: block; touch-action: none; }
 .pause-hint { display: none; word-break: keep-all; font-size: 12px; color: var(--cuke-deep); }
 @media (hover: hover) and (pointer: fine) { .pause-hint { display: block; } }
 .tt-list li[role="button"], .tt-dishes li[role="button"] { cursor: pointer; }
-.tt-list li:focus-visible, .tt-dishes li:focus-visible { outline: 4px solid var(--coral-deep); outline-offset: 2px; }
+.tt-list li:focus-visible, .tt-dishes li:focus-visible { outline: 4px solid #1B6B2F; outline-offset: 2px; }
 #tview { z-index: 22; gap: 10px; background: radial-gradient(circle at 50% 35%, #FFFBE0, #FFEBA6 60%, #FFD36B); -webkit-backdrop-filter: none; backdrop-filter: none; }
 #tview .tv-badge { display: flex; align-items: center; justify-content: center; width: min(68vw, 270px); min-height: 150px; animation: tv-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
 #tview .tv-badge img { display: block; width: 100%; height: auto; max-height: 300px; object-fit: contain; filter: drop-shadow(0 6px 0 rgba(29, 43, 69, 0.16)); -webkit-user-drag: none; pointer-events: none; }
@@ -208,12 +208,12 @@ canvas { display: block; touch-action: none; }
 #tview p { font-size: 14px; word-break: keep-all; }
 @keyframes tv-pop { from { opacity: 0; transform: scale(0.4) rotate(-6deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 @media (prefers-reduced-motion: reduce) { #tview .tv-badge { animation: none; } }
-.btn:focus-visible.kb { outline-color: var(--coral-deep); }
+.btn:focus-visible.kb { outline-color: #1B6B2F; }
 /* 키보드 선택 테두리: 마우스로 누른 뒤에도(브라우저가 focus-visible을 안 켜는 경우) 항상 보이게 */
-body.kbmode button:focus { outline: 3px solid var(--ink); outline-offset: 3px; }
-body.kbmode .btn.dish:focus { outline: 4px solid var(--coral-deep); outline-offset: 3px; transform: translateY(-2px) scale(1.04); }
-body.kbmode .tt-list li:focus, body.kbmode .tt-dishes li:focus { outline: 4px solid var(--coral-deep); outline-offset: 2px; }
-body.kbmode .mission-intro input:focus { outline: 3px solid var(--ink); outline-offset: 1px; }
+body.kbmode button:focus { outline: 3px solid #1B6B2F; outline-offset: 3px; }
+body.kbmode .btn.dish:focus { outline: 4px solid #1B6B2F; outline-offset: 3px; transform: translateY(-2px) scale(1.04); }
+body.kbmode .tt-list li:focus, body.kbmode .tt-dishes li:focus { outline: 4px solid #1B6B2F; outline-offset: 2px; }
+body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-offset: 1px; }
 .tt-h { margin: 4px 0 0; font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--ink); }
 .tt-list, .tt-dishes { list-style: none; margin: 0; padding: 0; width: 100%; max-width: 300px; }
 .tt-list { display: flex; flex-direction: column; gap: 6px; }
