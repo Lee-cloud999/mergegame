@@ -55,7 +55,7 @@ small{color:#a9c9b0}
   var SPECIALS=['오이껍질팩 장인','편의점 죽돌이','원플원에 진심인 편','오이랑 썸 타는 중','오이귀신 손절','오이 알레르기 아님','바지락에 영혼을 팔았다','오이 요리 연구소장'];
   var DISHES=['소박이 입덕자','오이 빼달라던 자','냉국 한 사발 뚝딱','무침에 눈 뜬 자'];
   var TIERS=[[3000,'오이 허접'],[8000,'오이 극혐러'],[15000,'오이 학살자'],[20000,'오이계 빌런']];
-  var KEYS=['smur-cucumber-best','oi-special-titles','oi-dish-titles','oi-clam-count','oi-grand','oi-bonus','oi-mission2'];
+  var KEYS=['smur-cucumber-best','oi-special-titles','oi-dish-titles','oi-clam-count','oi-grand','oi-bonus','oi-mission3'];
   function g(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function set(k,v){try{localStorage.setItem(k,v)}catch(e){say('저장 실패 (브라우저 설정 확인)')}}
   function del(k){try{localStorage.removeItem(k)}catch(e){}}
@@ -71,11 +71,11 @@ small{color:#a9c9b0}
     rows.push('<tr><td>바지락 엔딩 횟수</td><td>'+(parseInt(g('oi-clam-count'),10)||0)+'</td></tr>');
     rows.push('<tr><td>오이 세계관의 지배자</td><td class="'+(g('oi-grand')?'ok':'no')+'">'+(g('oi-grand')?'이미 등장함':'아직')+'</td></tr>');
     rows.push('<tr><td>BONUS 버튼</td><td class="'+(g('oi-bonus')?'ok':'no')+'">'+(g('oi-bonus')?'열림':'잠김')+'</td></tr>');
-    rows.push('<tr><td>미션 목표</td><td>'+(g('oi-mission2')||'10000 (기본)')+'</td></tr>');
+    rows.push('<tr><td>미션 목표</td><td>'+(g('oi-mission3')||'15000 (기본)')+'</td></tr>');
     document.getElementById('tbl').innerHTML=rows.join('');
     document.getElementById('sum').textContent='칭호 '+n+' / '+tot+'개 (지배자 제외)';
     document.getElementById('bestIn').value=best;
-    document.getElementById('missIn').value=parseInt(g('oi-mission2'),10)||10000;
+    document.getElementById('missIn').value=parseInt(g('oi-mission3'),10)||15000;
   }
   function ask(t){return confirm(t)}
   document.getElementById('unlockAll').onclick=function(){
@@ -92,7 +92,7 @@ small{color:#a9c9b0}
   document.getElementById('bestSet').onclick=function(){var v=parseInt(document.getElementById('bestIn').value,10);
     if(!(v>=0)){say('숫자를 확인해 주세요.');return}set('smur-cucumber-best',String(v));say('최고 점수를 저장했어요.');render()};
   document.getElementById('missSet').onclick=function(){var v=parseInt(document.getElementById('missIn').value,10);
-    if(!(v>=10)){say('10 이상으로 입력해 주세요.');return}set('oi-mission2',String(v));say('미션 목표를 저장했어요.');render()};
+    if(!(v>=10)){say('10 이상으로 입력해 주세요.');return}set('oi-mission3',String(v));say('미션 목표를 저장했어요.');render()};
   render();
 })();
 </script></body></html>
