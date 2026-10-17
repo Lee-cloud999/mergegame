@@ -855,7 +855,7 @@ canvas { display: block; touch-action: none; }
     { name: '편의점 VIP', img: 'faces/vip.png', hint: '한 판에 음식 8종 모두 먹기' },
     { name: '원플원에 진심인 편', img: 'faces/oneplus.png', hint: '한 판에 1+1 음식 3개 먹기' },
     { name: '오이랑 썸 타는 중', img: 'faces/some.png', hint: '한 판에 아슬아슬 보너스 10번' },
-    { name: '오이귀신도 손절함', img: 'faces/cut.png', hint: '한 판에 귀신이 던진 오이 6개 피하기' },
+    { name: '오이귀신 손절', img: 'faces/cut.png', hint: '한 판에 귀신이 던진 오이 6개 피하기' },
     { name: '오이 알레르기 아님', img: 'faces/allergy.png', hint: '하트 하나도 잃지 않고 미션 성공' },
     { name: '바지락에 영혼을 팔았다', img: 'faces/clam.png', hint: '바지락 술찜 엔딩 3회 보기', count: 'oi-clam-count', goal: 3 },
     { name: '오이 요리 연구소장', img: 'faces/lab.png', hint: '실패 엔딩의 오이 요리 4종 모두 먹기' }
@@ -1511,7 +1511,7 @@ canvas { display: block; touch-action: none; }
         }
         if (it.y > GROUND - 6) {
           dodged++;
-          if (it.ghostThrown) { ghostDodged++; if (ghostDodged >= 6) earnSpecial('오이귀신도 손절함'); }
+          if (it.ghostThrown) { ghostDodged++; if (ghostDodged >= 6) earnSpecial('오이귀신 손절'); }
           burst(it.x, GROUND - 4, ['#3DA34D', '#6FD17B'], 5, 70);
           items.splice(i, 1); continue;
         }
