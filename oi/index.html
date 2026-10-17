@@ -1252,6 +1252,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     tvLast = from || null;
     var im = document.getElementById('tvImg'), em = document.getElementById('tvEmoji');
     if (info.img) { im.src = info.img; im.hidden = false; em.hidden = true; }
+    else if (info.emoji === '') { em.textContent = ''; em.hidden = true; im.hidden = true; }
     else { em.textContent = info.emoji || '🏆'; em.hidden = false; im.hidden = true; }
     document.getElementById('tvName').textContent = info.name;
     document.getElementById('tvSub').textContent = info.sub || '';
@@ -1281,7 +1282,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       var b = document.createElement('b'); b.textContent = ok ? t.name : '???';
       var sp = document.createElement('span'); sp.textContent = (ok ? '✓ ' : '🔒 ') + t.min + '점 이상';
       li.appendChild(b); li.appendChild(sp); sl.appendChild(li);
-      regItem(li, ok, { name: t.name, emoji: TIER_EMO[TIERS.indexOf(t)], sub: t.min + '점 이상 달성!' });
+      regItem(li, ok, { name: t.name, emoji: '', sub: t.min + '점 이상 달성!' });
     });
     var dl = document.getElementById('ttDish');
     dl.innerHTML = '';
