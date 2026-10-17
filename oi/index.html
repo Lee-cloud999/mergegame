@@ -1507,8 +1507,9 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
   window.addEventListener('keydown', function (e) {
     var k = e.key;
-    if (creditsOn) { if (creditsSkip && k === 'Escape') { e.preventDefault(); if (!e.repeat) document.getElementById('crX').click(); return; } if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
-    if (warnLock) { if (document.activeElement === warnX && (k === 'Enter' || k === ' ')) return; e.preventDefault(); return; }
+    if (creditsOn) { var isX0 = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ'; if (creditsSkip && (k === 'Escape' || isX0)) { e.preventDefault(); if (!e.repeat) document.getElementById('crX').click(); return; } if (creditsEl.classList.contains('done') && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); if (!e.repeat) document.getElementById('crClose').click(); return; } e.preventDefault(); return; }
+    var isX = e.code === 'KeyX' || k === 'x' || k === 'X' || k === 'ㅌ';
+    if (warnLock) { if (isX || k === 'Escape') { e.preventDefault(); if (!e.repeat) skipWarn(); return; } if (document.activeElement === warnX && (k === 'Enter' || k === ' ')) return; e.preventDefault(); return; }
     if (document.activeElement === missionInput) {
       if (k === 'Enter' && state === 'ready' && !introEl.hidden) { start(); e.preventDefault(); }
       else if ((k === 'ArrowDown' || k === 'ArrowUp' || k === 'Escape') && state === 'ready' && !introEl.hidden) { e.preventDefault(); try { startBtn.focus({ preventScroll: true }); } catch (err) {} }
