@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 21:55">
+<meta name="oi-build" content="2026.10.18 22:02">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -254,9 +254,11 @@ canvas { display: block; touch-action: none; }
 .dish.mystery .dq { display: flex; }
 .dish.mystery img, .dish.opening img { visibility: hidden; }
 .giftbig { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.78); pointer-events: none; }
+.giftbig img { display: block; width: min(80vw, 290px); height: auto; filter: drop-shadow(0 10px 0 rgba(29, 43, 69, 0.18)); animation: dish-big 1.1s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+@keyframes dish-big { 0% { transform: scale(0.1) rotate(-20deg); opacity: 0; } 55% { transform: scale(1.18) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0); } }
 .giftbig span { font-size: min(78vw, 270px); line-height: 1; filter: drop-shadow(0 10px 0 rgba(29, 43, 69, 0.18)); animation: gift-big 1.2s ease-in-out both; }
 @keyframes gift-big { 0% { transform: scale(0.3) rotate(0); opacity: 0; } 18% { transform: scale(1) rotate(0); opacity: 1; } 30% { transform: scale(1) rotate(-12deg); } 42% { transform: scale(1.04) rotate(12deg); } 54% { transform: scale(1.06) rotate(-14deg); } 66% { transform: scale(1.08) rotate(14deg); } 78% { transform: scale(1.1) rotate(-10deg); } 90% { transform: scale(1.14) rotate(8deg); } 100% { transform: scale(1.2) rotate(0); } }
-@media (prefers-reduced-motion: reduce) { .giftbig span { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .giftbig span, .giftbig img { animation: none; } }
 .dish.opening .dq { display: flex; font-size: 54px; top: 4px; color: inherit; animation: gift-shake 0.9s ease-in-out both; }
 @keyframes gift-shake { 0%, 100% { transform: rotate(0) scale(1); } 10% { transform: rotate(-14deg) scale(1.08); } 25% { transform: rotate(14deg) scale(1.1); } 40% { transform: rotate(-16deg) scale(1.12); } 55% { transform: rotate(16deg) scale(1.14); } 70% { transform: rotate(-10deg) scale(1.16); } 85% { transform: rotate(6deg) scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .dish.opening .dq { animation: none; } }
@@ -273,7 +275,7 @@ canvas { display: block; touch-action: none; }
 @keyframes dish-pop { 0% { transform: scale(0.2) translateY(30px); opacity: 0; } 60% { transform: scale(1.25) translateY(-8px); opacity: 1; } 100% { transform: scale(1) translateY(0); } }
 .dish-pic.pop { animation: dish-pop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
 @media (prefers-reduced-motion: reduce) { .dish-pic.pop { animation: none; } }
-#resultStep .dish-pic { width: clamp(80px, 22vw, 104px); }
+#resultStep .dish-pic { width: clamp(96px, 27vw, 116px); }
 #intro { gap: 8px; padding: 12px 22px; }
 #intro { gap: 9px; }
 #intro > #startBtn { margin-bottom: 6px; }
@@ -1685,6 +1687,9 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       sfx.click();
       dishBtns.forEach(function (x) { if (x !== b) x.disabled = true; });
       setTimeout(function () {
+      gb.innerHTML = '<img alt="" src="' + b.getAttribute('data-img') + '">';
+      sfx.pop();
+      setTimeout(function () {
       b.classList.remove('opening');
       if (gb.parentNode) gb.parentNode.removeChild(gb);
       if (qq) qq.textContent = '?';
@@ -1720,7 +1725,8 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
         againBtn.disabled = false; mainBtn.disabled = false;
         try { againBtn.focus({ preventScroll: true }); } catch (e) {}
       }, 500);
-      }, 1250);
+      }, 1100);
+      }, 1200);
     });
   });
 
