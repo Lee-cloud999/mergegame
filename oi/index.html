@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 19:40">
+<meta name="oi-build" content="2026.10.18 19:46">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -249,6 +249,13 @@ canvas { display: block; touch-action: none; }
 .step { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
 .dishes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; width: 100%; max-width: 300px; margin-top: 4px; }
 .dish { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px 10px; background: #FFFFFF; color: var(--cuke-deep); font-size: 17px; box-shadow: 0 5px 0 var(--cuke-deep); }
+.dish { position: relative; }
+.dish .dq { position: absolute; left: 0; right: 0; top: 8px; height: min(100%, 104px); display: none; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 56px; line-height: 1; color: #B5C0D0; pointer-events: none; }
+.dish.mystery .dq { display: flex; }
+.dish.mystery img, .dish.opening img { visibility: hidden; }
+.dish.opening .dq { display: flex; font-size: 54px; top: 4px; color: inherit; animation: gift-shake 0.9s ease-in-out both; }
+@keyframes gift-shake { 0%, 100% { transform: rotate(0) scale(1); } 10% { transform: rotate(-14deg) scale(1.08); } 25% { transform: rotate(14deg) scale(1.1); } 40% { transform: rotate(-16deg) scale(1.12); } 55% { transform: rotate(16deg) scale(1.14); } 70% { transform: rotate(-10deg) scale(1.16); } 85% { transform: rotate(6deg) scale(1.2); } }
+@media (prefers-reduced-motion: reduce) { .dish.opening .dq { animation: none; } }
 .dish img { display: block; width: min(100%, 104px); height: auto; pointer-events: none; -webkit-user-drag: none; }
 .dish:active { box-shadow: 0 1px 0 var(--cuke-deep); }
 .dish-pic { display: block; width: clamp(96px, 28vw, 128px); height: auto; filter: drop-shadow(0 4px 0 rgba(29, 43, 69, 0.14)); pointer-events: none; -webkit-user-drag: none; }
@@ -259,6 +266,9 @@ canvas { display: block; touch-action: none; }
 .collect { font-size: 13px; line-height: 1.3; }
 #resultStep { gap: 8px; }
 #resultStep .face { width: clamp(72px, 20vw, 92px); }
+@keyframes dish-pop { 0% { transform: scale(0.2) translateY(30px); opacity: 0; } 60% { transform: scale(1.25) translateY(-8px); opacity: 1; } 100% { transform: scale(1) translateY(0); } }
+.dish-pic.pop { animation: dish-pop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+@media (prefers-reduced-motion: reduce) { .dish-pic.pop { animation: none; } }
 #resultStep .dish-pic { width: clamp(80px, 22vw, 104px); }
 #intro { gap: 8px; padding: 12px 22px; }
 #intro .face { width: clamp(64px, 18vw, 80px); }
@@ -268,11 +278,11 @@ canvas { display: block; touch-action: none; }
 #intro .pc-hint { margin-top: -4px; font-family: var(--font-display); font-size: 15px; color: var(--cuke-deep); }
 .pack-new { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 16px; color: #fff; background: var(--cuke-deep); border-radius: 999px; padding: 4px 16px 4px 8px; }
 .pack-new img { display: block; width: 40px; height: auto; }
-.tt-list li img { display: block; width: 44px; height: auto; }
+.tt-list li img { display: block; width: 54px; height: auto; }
 .tt-list li.lock img { filter: grayscale(1); opacity: 0.45; }
 .tt-list.tt-sp li { flex-direction: column; align-items: flex-start; gap: 2px; }
-.tt-list.tt-sp li > span { font-size: 12px; }
-.tt-ico { font-size: 26px; line-height: 1; width: 44px; text-align: center; }
+.tt-list.tt-sp li > span { font-size: 14px; }
+.tt-ico { font-size: 32px; line-height: 1; width: 54px; text-align: center; }
 .tt-list.tt-sp li.lock .tt-ico { filter: grayscale(1); opacity: 0.5; }
 .tt-list li .tt-main { display: flex; align-items: center; gap: 8px; }
 .pack-new b { font-weight: 400; color: #FFE27A; }
@@ -283,7 +293,7 @@ canvas { display: block; touch-action: none; }
 @keyframes tb-pulse-pc { 0%, 100% { box-shadow: 0 4px 0 #B8860B, 0 0 0 0 rgba(255, 201, 77, 0.65); } 50% { box-shadow: 0 4px 0 #B8860B, 0 0 0 9px rgba(255, 201, 77, 0); } }
 @media (prefers-reduced-motion: reduce) { #titlesBtn { animation: none; } }
 .btn-sub { font-size: 17px; padding: 10px 20px; background: #fff; color: var(--cuke-deep); box-shadow: 0 4px 0 var(--cuke-deep); }
-.tt-note { font-size: 14px; }
+.tt-note { font-size: 16px; }
 .pc-hint.need-click { color: var(--coral-deep) !important; }
 .pause-hint { display: none; word-break: keep-all; font-size: 12px; color: var(--cuke-deep); }
 @media (hover: hover) and (pointer: fine) { .pause-hint { display: block; } }
@@ -304,17 +314,17 @@ body.kbmode button:focus { outline: 3px solid #1B6B2F; outline-offset: 3px; }
 body.kbmode .btn.dish:focus { outline: 4px solid #1B6B2F; outline-offset: 3px; transform: translateY(-2px) scale(1.04); }
 body.kbmode .tt-list li:focus, body.kbmode .tt-dishes li:focus { outline: 4px solid #1B6B2F; outline-offset: 2px; }
 body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-offset: 1px; }
-.tt-h { margin: 4px 0 0; font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--ink); }
-.tt-list, .tt-dishes { list-style: none; margin: 0; padding: 0; width: 100%; max-width: 300px; }
-.tt-list { display: flex; flex-direction: column; gap: 6px; }
-.tt-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff; border: 2px solid var(--cuke-deep); border-radius: 12px; padding: 6px 12px; font-size: 14px; }
-.tt-list li b { font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--cuke-deep); }
+.tt-h { margin: 8px 0 0; font-family: var(--font-display); font-weight: 400; font-size: 23px; color: var(--ink); }
+.tt-list, .tt-dishes { list-style: none; margin: 0; padding: 0; width: 100%; max-width: 316px; }
+.tt-list { display: flex; flex-direction: column; gap: 9px; }
+.tt-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff; border: 2px solid var(--cuke-deep); border-radius: 14px; padding: 9px 14px; font-size: 16px; }
+.tt-list li b { font-family: var(--font-display); font-weight: 400; font-size: 21px; color: var(--cuke-deep); }
 .tt-list li.lock { border-color: #B5C0D0; color: #7A869C; }
 .tt-list li.lock b { color: #7A869C; }
-.tt-dishes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
-.tt-dishes li { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 2px solid var(--cuke-deep); border-radius: 12px; padding: 6px 4px 8px; font-size: 12px; }
-.tt-dishes img { display: block; width: 64px; height: auto; }
-.tt-dishes b { font-family: var(--font-display); font-weight: 400; font-size: 16px; color: var(--cuke-deep); }
+.tt-dishes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.tt-dishes li { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 2px solid var(--cuke-deep); border-radius: 14px; padding: 8px 4px 10px; font-size: 14px; }
+.tt-dishes img { display: block; width: 78px; height: auto; }
+.tt-dishes b { font-family: var(--font-display); font-weight: 400; font-size: 19px; color: var(--cuke-deep); }
 .tt-dishes li.lock { border-color: #B5C0D0; color: #7A869C; }
 .tt-dishes li.lock img { filter: grayscale(1); opacity: 0.45; }
 .tt-dishes li.lock b { color: #7A869C; }
@@ -868,6 +878,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     Array.prototype.forEach.call(document.querySelectorAll('.overlay:not([hidden])'), function (el) {
       var k = base;
       el.style.setProperty('--k', String(k));
+      if (el.id === 'titles' || el.id === 'review') return; // 길어서 스크롤하는 화면은 확대 그대로
       for (var i = 0; i < 4 && el.scrollHeight > el.clientHeight + 1 && k > 1; i++) {
         k = Math.max(1, k * (el.clientHeight / el.scrollHeight) * 0.98);
         el.style.setProperty('--k', String(k));
@@ -1165,6 +1176,17 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     document.getElementById('rewardBox').hidden = !missionDone;
     document.getElementById('dishGrid').hidden = missionDone;
     document.getElementById('pickHint').hidden = missionDone;
+    (function () {
+      var got = []; try { got = JSON.parse(localStorage.getItem('oi-dish-titles') || '[]'); } catch (e) { got = []; }
+      dishBtns.forEach(function (b) {
+        var sp = b.querySelector('span:not(.dq)'), im = b.querySelector('img'), q = b.querySelector('.dq');
+        if (!q) { q = document.createElement('span'); q.className = 'dq'; q.setAttribute('aria-hidden', 'true'); q.textContent = '?'; b.insertBefore(q, b.firstChild); }
+        var known = got.indexOf(b.getAttribute('data-title')) >= 0;
+        b.classList.toggle('mystery', !known);
+        sp.textContent = known ? b.getAttribute('data-name') : '???';
+        b.setAttribute('aria-label', known ? b.getAttribute('data-name') : '비밀 요리');
+      });
+    })();
     document.getElementById('pickFace').src = missionDone ? 'faces/face7.png' : 'faces/face4.png';
     document.getElementById('resultDish').hidden = false;
     document.getElementById('resultReward').hidden = true;
@@ -1633,13 +1655,22 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   });
   dishBtns.forEach(function (b) {
     b.addEventListener('click', function () {
-      if (b.disabled) return;
+      if (b.disabled || b.classList.contains('opening')) return;
+      var qq = b.querySelector('.dq');
+      if (qq) qq.textContent = '🎁';
+      b.classList.add('opening');
+      sfx.click();
+      dishBtns.forEach(function (x) { if (x !== b) x.disabled = true; });
+      setTimeout(function () {
+      b.classList.remove('opening');
+      if (qq) qq.textContent = '?';
       document.getElementById('overLine').textContent = b.getAttribute('data-obj') + ' 와작와작 먹었어요.';
       if (!playDishVoice()) sfx.crunch();
       pickStep.hidden = true;
       resultStep.hidden = false;
       resultDish.src = b.getAttribute('data-img');
       resultDish.alt = b.getAttribute('data-name');
+      resultDish.classList.remove('pop'); void resultDish.offsetWidth; resultDish.classList.add('pop');
       var dishTitle = b.getAttribute('data-title');
       document.getElementById('dishTitle').textContent = dishTitle;
       var got = [];
@@ -1665,6 +1696,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
         againBtn.disabled = false; mainBtn.disabled = false;
         try { againBtn.focus({ preventScroll: true }); } catch (e) {}
       }, 500);
+      }, 900);
     });
   });
 
