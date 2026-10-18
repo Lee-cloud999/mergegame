@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 20:58">
+<meta name="oi-build" content="2026.10.18 21:55">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -253,6 +253,10 @@ canvas { display: block; touch-action: none; }
 .dish .dq { position: absolute; left: 0; right: 0; top: 8px; height: min(100%, 104px); display: none; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 56px; line-height: 1; color: #B5C0D0; pointer-events: none; }
 .dish.mystery .dq { display: flex; }
 .dish.mystery img, .dish.opening img { visibility: hidden; }
+.giftbig { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.78); pointer-events: none; }
+.giftbig span { font-size: min(78vw, 270px); line-height: 1; filter: drop-shadow(0 10px 0 rgba(29, 43, 69, 0.18)); animation: gift-big 1.2s ease-in-out both; }
+@keyframes gift-big { 0% { transform: scale(0.3) rotate(0); opacity: 0; } 18% { transform: scale(1) rotate(0); opacity: 1; } 30% { transform: scale(1) rotate(-12deg); } 42% { transform: scale(1.04) rotate(12deg); } 54% { transform: scale(1.06) rotate(-14deg); } 66% { transform: scale(1.08) rotate(14deg); } 78% { transform: scale(1.1) rotate(-10deg); } 90% { transform: scale(1.14) rotate(8deg); } 100% { transform: scale(1.2) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .giftbig span { animation: none; } }
 .dish.opening .dq { display: flex; font-size: 54px; top: 4px; color: inherit; animation: gift-shake 0.9s ease-in-out both; }
 @keyframes gift-shake { 0%, 100% { transform: rotate(0) scale(1); } 10% { transform: rotate(-14deg) scale(1.08); } 25% { transform: rotate(14deg) scale(1.1); } 40% { transform: rotate(-16deg) scale(1.12); } 55% { transform: rotate(16deg) scale(1.14); } 70% { transform: rotate(-10deg) scale(1.16); } 85% { transform: rotate(6deg) scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .dish.opening .dq { animation: none; } }
@@ -1677,10 +1681,12 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       var qq = b.querySelector('.dq');
       if (qq) qq.textContent = '🎁';
       b.classList.add('opening');
+      var gb = document.createElement('div'); gb.className = 'giftbig'; gb.setAttribute('aria-hidden', 'true'); gb.innerHTML = '<span>🎁</span>'; overEl.appendChild(gb);
       sfx.click();
       dishBtns.forEach(function (x) { if (x !== b) x.disabled = true; });
       setTimeout(function () {
       b.classList.remove('opening');
+      if (gb.parentNode) gb.parentNode.removeChild(gb);
       if (qq) qq.textContent = '?';
       document.getElementById('overLine').textContent = b.getAttribute('data-obj') + ' 와작와작 먹었어요.';
       if (!playDishVoice()) sfx.crunch();
@@ -1714,7 +1720,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
         againBtn.disabled = false; mainBtn.disabled = false;
         try { againBtn.focus({ preventScroll: true }); } catch (e) {}
       }, 500);
-      }, 900);
+      }, 1250);
     });
   });
 
