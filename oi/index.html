@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 19:52">
+<meta name="oi-build" content="2026.10.18 19:58">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -146,9 +146,9 @@ body {
   .hud { max-width: var(--fw, 440px); }
   .overlay > *, .title-toast { zoom: var(--k, 1); }
   .overlay > * { flex-shrink: 0; }
-  .row2 { gap: 14px 12px; }
-  .row2.row-extra { margin-top: 12px; gap: 14px 12px; }
-  .overlay .row2 + .row2 { margin-top: 12px; }
+  #intro { gap: 12px !important; }
+  #intro .row2, #intro .row2.row-extra { gap: 20px 18px; }
+  #intro .row2.row-extra { margin-top: 12px; }
   #titlesBtn { animation-name: tb-pulse-pc; }
   .btn.btn-bonus { margin-top: 0; }
   body { padding-block: 6px; gap: 0; }
@@ -271,6 +271,10 @@ canvas { display: block; touch-action: none; }
 @media (prefers-reduced-motion: reduce) { .dish-pic.pop { animation: none; } }
 #resultStep .dish-pic { width: clamp(80px, 22vw, 104px); }
 #intro { gap: 8px; padding: 12px 22px; }
+#intro { gap: 9px; }
+#intro > #startBtn { margin-bottom: 6px; }
+#intro .row2, #intro .row2.row-extra { gap: 14px 14px; }
+#intro .row2.row-extra { margin-top: 6px; }
 #intro .face { width: clamp(64px, 18vw, 80px); }
 #intro .cuke-logo { width: clamp(46px, 13vw, 58px); }
 #intro h1 { font-size: clamp(26px, 8vw, 34px); }
@@ -468,7 +472,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     </div>
 
     <div class="overlay" id="tview" hidden>
-      <div class="tv-label">🎉 내가 모은 칭호</div>
+      <div class="tv-label" id="tvLabel">🎉 내가 모은 칭호</div>
       <div class="tv-badge"><img id="tvImg" alt="" hidden><span class="tv-emoji" id="tvEmoji" hidden></span></div>
       <h2 id="tvName"></h2>
       <p id="tvSub"></p>
@@ -1427,7 +1431,10 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     li.addEventListener('click', function () { activateItem(li); });
   }
   function activateItem(li) {
-    if (!li._ok) return;
+    if (!li._ok) {
+      if (li._info.grand) openTview({ emoji: '🔒', name: '최종 칭호를 얻으면 엔딩 크레딧을 볼 수 있어요!', sub: '' }, li);
+      return;
+    }
     if (li._info.grand) { sfx.click(); unlockBonus(); startCredits(); return; }
     openTview(li._info, li);
   }
@@ -1437,6 +1444,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     if (info.img) { im.src = info.img; im.hidden = false; em.hidden = true; }
     else if (info.emoji === '') { em.textContent = ''; em.hidden = true; im.hidden = true; }
     else { em.textContent = info.emoji || '🏆'; em.hidden = false; im.hidden = true; }
+    document.getElementById('tvLabel').hidden = info.emoji === '🔒';
     document.getElementById('tvName').textContent = info.name;
     document.getElementById('tvSub').textContent = info.sub || '';
     tviewEl.hidden = false;
