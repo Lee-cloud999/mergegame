@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 19:46">
+<meta name="oi-build" content="2026.10.18 19:52">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -324,6 +324,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 .tt-dishes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
 .tt-dishes li { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 2px solid var(--cuke-deep); border-radius: 14px; padding: 8px 4px 10px; font-size: 14px; }
 .tt-dishes img { display: block; width: 78px; height: auto; }
+.tt-dishes .tt-q { width: 78px; height: 64px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 52px; line-height: 1; color: #B5C0D0; }
 .tt-dishes b { font-family: var(--font-display); font-weight: 400; font-size: 19px; color: var(--cuke-deep); }
 .tt-dishes li.lock { border-color: #B5C0D0; color: #7A869C; }
 .tt-dishes li.lock img { filter: grayscale(1); opacity: 0.45; }
@@ -1474,9 +1475,11 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       if (ok) m++;
       var li = document.createElement('li');
       if (!ok) li.className = 'lock';
-      var img = document.createElement('img'); img.src = btn.getAttribute('data-img'); img.alt = '';
+      var img;
+      if (ok) { img = document.createElement('img'); img.src = btn.getAttribute('data-img'); img.alt = ''; }
+      else { img = document.createElement('div'); img.className = 'tt-q'; img.setAttribute('aria-hidden', 'true'); img.textContent = '?'; }
       var b = document.createElement('b'); b.textContent = ok ? title : '???';
-      var sp = document.createElement('span'); sp.textContent = ok ? btn.getAttribute('data-name') : btn.getAttribute('data-name') + ' 먹으면 얻어요';
+      var sp = document.createElement('span'); sp.textContent = ok ? btn.getAttribute('data-name') : '\u00a0';
       li.appendChild(img); li.appendChild(b); li.appendChild(sp); dl.appendChild(li);
       regItem(li, ok, { name: title, img: btn.getAttribute('data-img'), sub: btn.getAttribute('data-name') + ' 먹고 얻은 칭호' });
     });
