@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아델와이스 오이 피하기</title>
-<meta name="oi-build" content="2026.10.18 20:12">
+<meta name="oi-build" content="2026.10.18 20:31">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
@@ -929,7 +929,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   var clock = 0, t = 0;
   var score, hearts, streak, mult, dodged, ate;
   var tierDone = {}, bestStart = 0;
-  var heartCd = 15, items, parts, pops, spawnT, waveT, goldenCd, shake, inv, flash, toast, feastT, twins, reverseT, ghost, ghostCd, feastEaten;
+  var heartCd = 15, items, parts, pops, spawnT, waveT, goldenCd, shake, inv, flash, toast, feastT, twins, reverseT, ghost, ghostCd, feastEaten, boss = null, bossDone = false;
   var player, tx;
   var keys = { left: false, right: false };
 
@@ -942,7 +942,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   function reset() {
     missionDone = false;
     t = 0; score = 0; hearts = 3; streak = 0; mult = 1; dodged = 0; ate = 0;
-    items = []; parts = []; pops = []; feastT = 0; twins = []; reverseT = 0; ghost = null; ghostCd = 18; feastEaten = 0; packShow = 0; tierDone = {}; foodSet = {}; twinRun = 0; nearCount = 0; ghostDodged = 0; newSpecials = [];
+    items = []; parts = []; pops = []; feastT = 0; twins = []; reverseT = 0; ghost = null; ghostCd = 18; feastEaten = 0; boss = null; bossDone = false; packShow = 0; tierDone = {}; foodSet = {}; twinRun = 0; nearCount = 0; ghostDodged = 0; newSpecials = [];
     spawnT = 0.6; waveT = 16; goldenCd = 8; heartCd = 26 + Math.random() * 10; shake = 0; inv = 0; flash = 0; toast = null;
     player = { x: W / 2, y: GROUND - 34, mood: 'idle', moodT: 0 };
     tx = W / 2;
@@ -992,7 +992,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
   }
 
   function spawnOne() {
-    var pC = feastT > 0 ? 0.88 : Math.min(0.58, 0.38 + t * 0.004);
+    var pC = boss ? 0 : (feastT > 0 ? 0.88 : Math.min(0.58, 0.38 + t * 0.004));
     var r = Math.random();
     var x = 24 + Math.random() * (W - 48);
     var base = speedBase();
@@ -1159,7 +1159,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
 
   function gameOver() {
     state = 'over';
-    reverseT = 0; ghost = null; packShow = 0; revShow = 0;
+    reverseT = 0; ghost = null; boss = null; packShow = 0; revShow = 0;
     if (!missionDone) sfx.over();
     setMood('faint', 9999);
     var isBest = score > best;
@@ -1883,7 +1883,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
       if (reverseT <= 0) { reverseT = 0; tx = W - tx; toast = { text: '좌우 반전 끝!', life: 1.0 }; }
     }
     ghostCd -= dt;
-    if (!ghost && t > 20 && ghostCd <= 0) {
+    if (!ghost && !boss && t > 20 && ghostCd <= 0) {
       var gpat = 1 + Math.floor(Math.random() * 3);
       // 패턴 1: 오이 1개 / 패턴 2: 오이 3개 동시에 / 패턴 3: 오이 3개씩 2번
       var gthrows = gpat === 3 ? [1.0, 2.2] : [1.0];
@@ -1913,9 +1913,11 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     }
     if (spawnT <= 0) {
       spawnOne();
-      spawnT = Math.max(0.32, 0.85 - t * 0.008) * (0.7 + Math.random() * 0.6);
+      spawnT = boss ? 1.1 + Math.random() * 0.6 : Math.max(0.32, 0.85 - t * 0.008) * (0.7 + Math.random() * 0.6);
     }
-    if (waveT <= 0 && t > 14) { spawnWave(); waveT = 13 + Math.random() * 5; }
+    if (waveT <= 0 && t > 14 && !boss) { spawnWave(); waveT = 13 + Math.random() * 5; }
+    if (!boss && !bossDone && t > 25 && score >= bossAt()) startBoss();
+    if (boss) updateBoss(dt);
     updateCommon(dt);
 
     for (var i = items.length - 1; i >= 0; i--) {
@@ -2042,6 +2044,113 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.strokeText('↔', it.x, it.y - 42);
     ctx.fillStyle = '#7B3FE4'; ctx.fillText('↔', it.x, it.y - 42);
+  }
+
+  // ===== 보스전: 오이 대왕 =====
+  var BOSS_TIME = 24;
+  function bossAt() { return Math.max(500, Math.min(6000, Math.round(MISSION * 0.45 / 100) * 100)); }
+  function bossSpeed() { return Math.max(270, speedBase() * 1.05); }
+  function bossCuke(x, y, vx, vy) {
+    var c = makeCuke(x, vy, false, Math.random() * 6);
+    c.t = 'smug'; c.sz = 64; c.r = 14; c.x = x; c.y = y; c.vx = vx; c.vy = vy; c.zig = false; c.purple = false; c.bossThrown = true;
+    items.push(c);
+  }
+  function startBoss() {
+    boss = { t: 0, bx: W / 2, nextAtk: 2.2, atk: 0, q: [] };
+    ghost = null; ghostCd = Math.max(ghostCd, 14);
+    toast = { text: '⚠ 오이 대왕 등장!', life: 2.2 };
+    shake = reduce ? 0 : 0.5;
+    if (!playGhostVoice()) sfx.ghost();
+  }
+  function endBoss() {
+    boss = null; bossDone = true; ghostCd = Math.max(ghostCd, 12);
+    score += 2000;
+    if (hearts < 3) hearts++;
+    items = items.filter(function (it) { if (it.bossThrown) { burst(it.x, it.y, ['#3DA34D', '#6FD17B'], 4, 90); return false; } return true; });
+    toast = { text: '오이 대왕 격파! +2000', life: 2.6 };
+    pop(player.x, player.y - 60, '+2000', '#C9443A');
+    burst(player.x, player.y - 30, ['#FFE27A', '#FF6B5A', '#FFFFFF', '#3DA34D'], 34, 240);
+    sfx.success(); setMood('cheer', 1.4);
+    renderHUD();
+  }
+  function bossAttack() {
+    var order = [0, 1, 2, 0, 3, 1, 2, 3];
+    var pat = order[boss.atk % order.length]; boss.atk++;
+    var sp = bossSpeed(), bx = boss.bx, by = 150, i;
+    if (pat === 0) {
+      // 부채꼴 조준: 5개를 플레이어 쪽으로
+      var flight = Math.max(120, player.y - by) / sp;
+      for (i = -2; i <= 2; i++) {
+        var gtx = Math.max(34, Math.min(W - 34, player.x + i * 52));
+        bossCuke(bx, by, (gtx - bx) / flight, sp);
+      }
+      sfx.throwIt();
+    } else if (pat === 1) {
+      // 오이 비: 7개를 간격을 두고 무작위 위치에
+      for (i = 0; i < 7; i++) {
+        (function (k) { boss.q.push({ d: k * 0.2, f: function () { bossCuke(30 + Math.random() * (W - 60), -30, 0, sp * 0.95); } }); })(i);
+      }
+    } else if (pat === 2) {
+      // 오이 벽: 틈이 플레이어와 멀리 있는 곳에
+      var slot = Math.round((player.x - 20) / 40), gap, tries = 0;
+      do { gap = Math.floor(Math.random() * 8); tries++; } while (Math.abs(gap - slot) < 3 && tries < 20);
+      for (i = 0; i < 9; i++) { if (i === gap || i === gap + 1) continue; bossCuke(20 + i * 40, -30, 0, sp * 0.8); }
+      toast = { text: '오이 벽!', life: 1.0 };
+    } else {
+      // 오이 쓸기: 한쪽에서 반대쪽으로 줄줄이
+      var dir = Math.random() < 0.5 ? 1 : -1, hole = 2 + Math.floor(Math.random() * 5);
+      for (i = 0; i < 9; i++) {
+        if (i === hole || i === hole + 1) continue;
+        (function (k) { boss.q.push({ d: (dir > 0 ? k : 8 - k) * 0.13, f: function () { bossCuke(20 + k * 40, -30, 0, sp * 0.9); } }); })(i);
+      }
+      toast = { text: '오이 쓸기!', life: 1.0 };
+    }
+  }
+  function updateBoss(dt) {
+    boss.t += dt;
+    boss.bx = W / 2 + Math.sin(boss.t * 0.9) * 90;
+    for (var qi = boss.q.length - 1; qi >= 0; qi--) {
+      boss.q[qi].d -= dt;
+      if (boss.q[qi].d <= 0) { var f = boss.q.splice(qi, 1)[0].f; f(); }
+    }
+    boss.nextAtk -= dt;
+    if (boss.nextAtk <= 0 && boss.t < BOSS_TIME - 1.8) { bossAttack(); boss.nextAtk = boss.t < 11 ? 2.7 : 2.1; }
+    if (boss.t >= BOSS_TIME) endBoss();
+  }
+  function drawBoss() {
+    if (!boss) return;
+    var appear = Math.min(1, boss.t * 1.2);
+    var x = boss.bx, y = 138 + Math.sin(clock * 3) * 4 - (1 - appear) * 160;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(0.85, 0.85);
+    var gl = ctx.createRadialGradient(0, 0, 10, 0, 0, 95);
+    gl.addColorStop(0, 'rgba(229,25,31,0.35)'); gl.addColorStop(1, 'rgba(229,25,31,0)');
+    ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, 95, 0, 7); ctx.fill();
+    ctx.rotate(Math.sin(clock * 2) * 0.06);
+    var im = cukeImgs.smug;
+    if (im && im.complete && im.naturalWidth) ctx.drawImage(im, -58, -58, 116, 116);
+    else { ctx.fillStyle = '#3DA34D'; rr(-34, -52, 68, 104, 30); ctx.fill(); }
+    // 화난 눈썹
+    ctx.strokeStyle = '#B3121A'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-30, -20); ctx.lineTo(-8, -8); ctx.moveTo(30, -20); ctx.lineTo(8, -8); ctx.stroke();
+    // 왕관
+    ctx.fillStyle = '#FFD23F'; ctx.strokeStyle = '#B8860B'; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(-26, -50); ctx.lineTo(-30, -78); ctx.lineTo(-14, -64); ctx.lineTo(0, -84); ctx.lineTo(14, -64); ctx.lineTo(30, -78); ctx.lineTo(26, -50); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#E5191F';
+    ctx.beginPath(); ctx.arc(0, -60, 4, 0, 7); ctx.fill();
+    ctx.restore();
+    // 버티기 막대
+    var r = Math.max(0, Math.min(1, boss.t / BOSS_TIME));
+    ctx.save();
+    ctx.fillStyle = 'rgba(29,43,69,0.28)'; rr(60, 36, 240, 14, 7); ctx.fill();
+    ctx.fillStyle = '#E5191F'; rr(60, 36, Math.max(10, 240 * (1 - r)), 14, 7); ctx.fill();
+    ctx.font = '12px Jua, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.lineJoin = 'round';
+    ctx.strokeText('오이 대왕 · 끝까지 버텨요!', W / 2, 43);
+    ctx.fillStyle = '#7A0F14'; ctx.fillText('오이 대왕 · 끝까지 버텨요!', W / 2, 43);
+    ctx.restore();
   }
   var ghostImg = new Image(); ghostImg.src = 'faces/ghost.png';
   function drawGhost() {
@@ -2244,6 +2353,7 @@ body.kbmode .mission-intro input:focus { outline: 3px solid #1B6B2F; outline-off
     clouds.forEach(drawCloud);
     drawCloth();
     drawGhost();
+    drawBoss();
     items.forEach(function (it) { if (it.k === 'cuke') { if (feastT > 0) drawFeastGlow(it); else if (it.purple) drawPurpleGlow(it); drawCuke(it); } else if (it.k === 'food') drawFood(it); else if (it.k === 'heart') drawHeartItem(it); else drawGold(it); });
     drawSmur();
     parts.forEach(function (p) {
